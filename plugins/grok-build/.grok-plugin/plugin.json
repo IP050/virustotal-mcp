@@ -1,0 +1,15 @@
+{
+  "name": "virustotal",
+  "version": "0.1.0",
+  "description": "Official VirusTotal threat intelligence for Grok Build: file, URL, domain and IP reports, explicitly requested analyses and submission recovery through browser OAuth.",
+  "author": {
+    "name": "VirusTotal",
+    "url": "https://www.virustotal.com"
+  },
+  "homepage": "https://github.com/VirusTotal/virustotal-mcp/blob/main/plugins/grok-build/README.md",
+  "repository": "https://github.com/VirusTotal/virustotal-mcp",
+  "license": "Apache-2.0",
+  "keywords": [
+    "virustotal"
+  ]
+}

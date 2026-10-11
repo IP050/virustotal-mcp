@@ -75,8 +75,13 @@ clients can use the [stdio installation](#install-for-local-stdio) below.
 | Antigravity IDE | [Local stdio configuration](#antigravity-ide) or [native OAuth recipe](https://github.com/VirusTotal/virustotal-mcp/blob/main/docs/google-clients.md#antigravity-native-oauth) |
 | Gemini CLI | [Install the OAuth extension](https://github.com/VirusTotal/virustotal-mcp/blob/main/docs/google-clients.md#gemini-cli-extension) |
 | Gemini Apps | [Custom MCP connection](https://github.com/VirusTotal/virustotal-mcp/blob/main/docs/google-clients.md#gemini-apps-custom-connection) and optional [importable skill](https://github.com/VirusTotal/virustotal-mcp/blob/main/docs/google-clients.md#gemini-apps-skill), subject to Google's account and regional availability; complete hosted workflow validation pending |
+| Grok Build | [Manual plugin installation](https://github.com/VirusTotal/virustotal-mcp/blob/main/plugins/grok-build/README.md#install-from-source); pilot with native workflow validation pending |
+| Kimi Code | [Manual plugin installation](https://github.com/VirusTotal/virustotal-mcp/blob/main/plugins/kimi/README.md#install-in-kimi-code); pilot with native workflow validation pending |
 
 Remote OAuth configuration for [GitHub Copilot CLI](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-command-reference) and [Devin CLI](https://docs.devin.ai/cli/extensibility/mcp/configuration) follows their official documentation; an OAuth-authenticated VirusTotal tool workflow has not yet been verified in either client.
+
+See [additional remote client recipes](docs/additional-clients.md) for Qwen Code,
+Mistral Vibe Work, Grok web and the xAI Responses API, with their validation limits.
 
 The [client validation guide](https://github.com/VirusTotal/virustotal-mcp/blob/main/docs/clients.md#validation-levels) distinguishes documented configuration, local transport checks and workflows exercised with a model. A recipe is not a claim of full validation in every client. Other agents can use the same MCP endpoint or the [VTAI API directly](https://ai.virustotal.com/skills/BASIC.md).
 

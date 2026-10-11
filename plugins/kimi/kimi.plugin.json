@@ -1,0 +1,25 @@
+{
+  "name": "virustotal",
+  "version": "0.1.0",
+  "description": "Official VirusTotal threat intelligence: file, URL, domain and IP reports, explicitly requested analyses and submission recovery through browser OAuth.",
+  "author": {
+    "name": "VirusTotal",
+    "url": "https://www.virustotal.com"
+  },
+  "homepage": "https://github.com/VirusTotal/virustotal-mcp/blob/main/plugins/kimi/README.md",
+  "license": "Apache-2.0",
+  "keywords": ["virustotal", "security", "threat-intelligence", "malware", "mcp"],
+  "skills": "./skills/",
+  "mcpServers": {
+    "virustotal": {
+      "url": "https://ai.virustotal.com/mcp"
+    }
+  },
+  "interface": {
+    "displayName": "VirusTotal",
+    "shortDescription": "Check files, URLs, domains and IPs with VirusTotal threat intelligence.",
+    "longDescription": "Official VirusTotal plugin. Retrieve existing VirusTotal reports for file hashes, URLs, domains and IP addresses, and explain detections, analysis dates and coverage. Submit files or URLs and request domain or IP reanalysis only when you explicitly ask; standard submissions are shared with the VirusTotal community and security partners. Sign in with your Google account through OAuth; VTAI access is free within published quotas and needs no VirusTotal API key.",
+    "developerName": "VirusTotal",
+    "websiteURL": "https://www.virustotal.com"
+  }
+}
