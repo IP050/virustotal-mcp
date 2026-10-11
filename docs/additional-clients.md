@@ -26,7 +26,7 @@ run these POSIX shell commands. Reuse an existing `virustotal` entry if present.
 ```sh
 export QWEN_CODE_FORCE_ENCRYPTED_FILE_STORAGE=true
 qwen mcp add --scope user --transport http virustotal https://ai.virustotal.com/mcp \
-  --include-tools get_file_report,get_url_report,get_domain_report,get_ip_report
+  --include-tools get_file_report get_url_report get_domain_report get_ip_report
 qwen
 ```
 
