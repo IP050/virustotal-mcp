@@ -3,14 +3,14 @@
   "name": "io.github.VirusTotal/virustotal-mcp",
   "title": "VirusTotal",
   "description": "Official VirusTotal MCP server: threat reports, file and URL submissions, and analysis recovery.",
-  "version": "0.9.8",
+  "version": "0.9.9",
   "websiteUrl": "https://ai.virustotal.com/connect/mcp",
   "packages": [
     {
       "registryType": "pypi",
       "registryBaseUrl": "https://pypi.org",
       "identifier": "vt-mcp",
-      "version": "0.9.8",
+      "version": "0.9.9",
       "runtimeHint": "uvx",
       "transport": {
         "type": "stdio"

@@ -36,7 +36,7 @@ public source repository. GitHub Actions OIDC establishes the corporate namespac
 publication is bound to repository ID `1361592455`. The package README carries the
 matching `mcp-name` ownership marker.
 
-Registry metadata **0.9.8** aligns its version with the existing **vt-mcp 0.9.8** package.
+Registry metadata **0.9.9** aligns its version with the existing **vt-mcp 0.9.9** package.
 The description identifies this as the official VirusTotal MCP server: “official”
 refers to VirusTotal ownership, not a Registry endorsement or compatibility badge.
 
@@ -69,7 +69,7 @@ credential for local stdio and direct REST access; MCP OAuth tokens are not REST
 API keys. Reuse credentials rather than registering again after an error or quota
 response.
 
-The Registry stdio configuration uses `uvx --python 3.12` with `vt-mcp==0.9.8`,
+The Registry stdio configuration uses `uvx --python 3.12` with `vt-mcp==0.9.9`,
 so uv selects a supported interpreter. Set `VTAI_TOKEN_FILE` to the path of a protected
 file containing only your VTAI token, for example `/home/user/.config/vt-mcp/token`.
 The Registry input is the file path; the credential stays in that file. Restrict
@@ -106,7 +106,7 @@ Run `publish` with the reviewed metadata commit on main. Before requesting OIDC,
 the helper checks PyPI's name, version and README ownership marker, and requires
 exactly the wheel and source distribution, neither yanked. Their SHA-256 hashes
 must match the corporate release's `SHA256SUMS` and GitHub asset digests. The
-annotated `v0.9.8` tag object, package source commit and checksum manifest are
+annotated `v0.9.9` tag object, package source commit and checksum manifest are
 pinned independently of the metadata commit. This verifies existing published
 bytes without rebuilding or uploading them. A moved tag, changed release,
 partial upload or mismatched source blocks publication.
@@ -116,12 +116,12 @@ published entry anonymously and compares its manifest and active status. No
 permanent Registry secret or VTAI token is needed. CI validates the schema and
 manifest contract without requiring an already-published PyPI package.
 
-`retire` and `restore` change only current corporate metadata version **0.9.8**.
+`retire` and `restore` change only current corporate metadata version **0.9.9**.
 Retirement preserves its manifest and status message in the `include_deleted=true`
 view; restoration reactivates the same entry and requires the matching PyPI release.
 The personal **0.8.0** entry remains retired with its corporate migration message.
-Corporate **0.9.0–0.9.3** and **0.9.5–0.9.6** retain their original manifests and active
-status; differing
+Corporate **0.9.0–0.9.3**, **0.9.5–0.9.6** and **0.9.8** retain their original
+manifests and active status; differing
 Registry/package version numbers in those historical entries are intentional pins,
 not evidence of a broken package. The Registry may update its computed latest flag.
 
