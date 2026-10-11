@@ -44,7 +44,7 @@ The synchronous binder returns `vt_mcp.analyses.AnalysisReader`, with one asynch
 
 `analysis_http_error(status, *, code=None, retry_after_seconds=None, submission=None)` creates a closed, sanitized `AnalysisError`, a subclass of `VTAIError`. Direct readers map typed backend errors rather than exposing raw messages. As with report readers, unexpected exceptions are sanitized and cancellation propagates. Do not place credentials or actors in the shared lifespan.
 
-## Bind autonomous submission and recovery
+## Bind explicitly requested submission and recovery
 
 `bind_submissions(ctx)` is an optional synchronous per-call binder returning
 `vt_mcp.analyses.SubmissionReader`:
@@ -128,3 +128,29 @@ VirusTotal client, task queue or credential store.
 OAuth authorization belongs to the host: network writes require reports-read plus
 `vt:network-analysis:write`, without expanding older file-write grants. No interactive
 confirmation or credential argument is added to individual tool calls.
+
+
+## Bind attachment downloads
+
+`bind_attachment_submissions(ctx)` optionally returns an actor-bound
+`vt_mcp.attachments.AttachmentSubmissionReader` with:
+
+```python
+async def submit_attachment(self, file: AttachmentFile) -> dict: ...
+```
+
+Import `AttachmentFile` and `validate_attachment_file` from `vt_mcp.attachments`.
+Only `download_url` is required; `file_id`, `file_name` and `mime_type` are optional.
+The factory validates bounded strings, HTTPS URL syntax and credential filenames
+before binding. The host must validate every destination and DNS answer, pin the
+public address while verifying TLS, reject redirects, avoid ambient proxies and
+credentials, and bound download time and bytes to 24,000,000. Descriptor metadata
+never authorizes an operation. Require the user's explicit submission request and
+apply the current account's file-write permission before fetching.
+
+Bind file submissions and analysis reads too; they provide SHA256 receipt and
+registered-analysis recovery. Use the existing file submission service after
+hashing the original bytes. Preserve uncertain outcomes without retrying uploads.
+The factory retains `openai/fileParams` metadata for existing host file objects.
+The former attachment binder and callable name are replaced; update embedders and
+refresh tool discovery when upgrading. Local stdio has no attachment downloader.

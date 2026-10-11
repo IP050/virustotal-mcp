@@ -140,6 +140,7 @@ def test_stdio_inline_and_local_first_post_then_restart_get_only(tmp_path):
                 assert {"submit_file", "submit_local_file"} <= tools.keys()
                 receipt = tools["get_submission"]
                 assert receipt.annotations.model_dump(by_alias=True, exclude_none=True) == {
+                    "title": "Get a VTAI submission receipt",
                     "readOnlyHint": True,
                     "destructiveHint": False,
                     "idempotentHint": True,

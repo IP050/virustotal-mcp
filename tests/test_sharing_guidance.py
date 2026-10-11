@@ -81,30 +81,13 @@ async def test_missing_file_guidance_uses_only_available_tools_and_keeps_read_co
                 "documentation_url",
             }
             steps = " ".join(error["next_steps"])
-            web_index = next(i for i, step in enumerate(error["next_steps"]) if WEB_UPLOAD in step)
-            web_offer, web_read = error["next_steps"][web_index : web_index + 2]
-            assert web_offer.startswith("If this client cannot transmit the file bytes")
-            assert "permissions or quota errors" in web_offer
-            assert "get_file_report(hash)" in web_read
-            assert not re.search(r"\bget_(?:submission|analysis)\b", web_read)
-            assert "do not create VTAI receipts" in web_read
-            assert "may not be available yet" in web_read
-            assert "every repeated lookup consumes quota" in web_read
-            assert error["next_steps"][-1] == SHARING_NOTICE
-            mentioned = set(
-                re.findall(r"\b(?:submit_(?:local_file|file)|get_(?:submission|analysis))\b", steps)
+            assert "unknown" in steps and "Verify the hash" in steps
+            assert "query quota" in steps
+            assert WEB_UPLOAD not in steps
+            assert not re.search(
+                r"\b(?:submit_\w+|reanalyze_\w+|get_submission|get_analysis)\b", steps
             )
-            assert mentioned <= names
-            if surface == "read_only":
-                assert not mentioned
-            else:
-                assert "submit_file" in mentioned and "SHA256" in steps
-                assert "submit_file" in " ".join(error["next_steps"][:web_index])
-                assert (
-                    value not in steps
-                )  # Never present an MD5/SHA1 lookup as the submission SHA256.
-            if surface == "remote":
-                assert "cannot read a client's local path" in steps
+            assert value not in steps
             assert json.loads(result.content[0].text) == result.structured_content
     assert calls == [("GET", value) for value in HASHES]
 
@@ -122,7 +105,8 @@ async def test_guidance_does_not_offer_removed_local_or_recovery_tools():
         mentioned = set(
             re.findall(r"\b(?:submit_(?:local_file|file)|get_(?:submission|analysis))\b", steps)
         )
-        assert mentioned == {"submit_local_file"} and mentioned <= names
+        assert not mentioned
+        assert "submit_local_file" in names
 
 
 @pytest.mark.parametrize("status", [401, 403, 429, 503])

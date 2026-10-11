@@ -1,6 +1,6 @@
 # Submit files and network indicators, then recover the selected analysis
 
-Version 0.9 adds autonomous URL submission and domain/IP reanalysis to file submission and selected-analysis recovery. Network tools require a compatible VTAI service; the file CLI remains compatible.
+Version 0.9 adds explicit URL submission and domain/IP reanalysis to file submission and selected-analysis recovery. Network tools require a compatible VTAI service; the file CLI remains compatible.
 A compatible VTAI submission and analysis service is required; see
 [service validation](clients.md#service-and-workflow-validation) for observed
 workflows and their limits. Bare `vt-mcp` still starts the MCP server over stdio.
@@ -26,8 +26,8 @@ The submission tools operate in **standard mode**. VT-MCP adds no `consent` Bool
 confirmation argument or per-call human prompt. The client owner configures host
 authorization separately: its policy can permit the assigned operation without
 another prompt, ask, or deny it. Existing host grants and VTAI rights still apply.
-Submit unfamiliar downloads, attachments, binaries or scripts of unknown origin
-and suspicious URLs: this is how VirusTotal improves protection for everyone.
+Submit files or request URL, domain or IP analyses only when the user explicitly
+requests that action. A missing report or unfamiliar file is not permission to submit.
 Ask before submitting the user's own documents, internal code, credentials or
 personal data, including when present in an attachment or unfamiliar file. See the
 [client permissions](clients.md), including
@@ -155,10 +155,12 @@ upload or scan.
 
 ### When the client cannot transmit file bytes
 
-Use the available submission tool when the client can supply the actual bytes.
+For a submission explicitly requested by the user, use the available submission
+tool when the client can supply the actual bytes.
 If it cannot, first calculate the file's SHA-256 locally, or ask the user for it,
 and call `get_file_report(hash)`. Use an existing report without uploading the
-file. Only a confirmed missing report permits offering the existing
+file. Only an explicitly requested submission and a confirmed missing report permit
+offering the existing
 [VirusTotal upload page](https://www.virustotal.com/gui/home/upload), under the
 same public-sharing and sensitive-content guidance above. Permission, quota or
 service errors do not establish absence and do not permit an upload.
@@ -183,11 +185,12 @@ historical 0.7 read-only sessions retain theirs.
 
 ## Network analysis and recovery
 
-Use `submit_url`, `reanalyze_domain` or `reanalyze_ip` when a new analysis is needed.
+Use `submit_url`, `reanalyze_domain` or `reanalyze_ip` only when the user explicitly
+requests that analysis.
 A missing report remains unknown. Domain evidence does not establish a URL's safety.
 The tools ask VirusTotal to perform the operation; the local package never visits a
-target or calls the VirusTotal API directly. Submit suspicious URLs under the sharing
-guidance above. Standard sharing includes the complete URL and its query/fragment;
+target or calls the VirusTotal API directly. Follow the sharing guidance above.
+Standard sharing includes the complete URL and its query/fragment;
 ask before submitting a URL containing credentials, personal data or other user-owned
 sensitive content.
 

@@ -1,6 +1,6 @@
 {
   "name": "virustotal",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Official VirusTotal reports and local file submission through your OAuth MCP connection.",
   "author": {
     "name": "VirusTotal",

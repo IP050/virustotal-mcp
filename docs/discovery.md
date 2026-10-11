@@ -2,7 +2,7 @@
 
 Connect to **`https://ai.virustotal.com/mcp`** with browser OAuth in a compatible
 client; no static token or local Python package is needed. Alternatively, install
-[`vt-mcp` 0.9.8 from PyPI](https://pypi.org/project/vt-mcp/0.9.8/) for local stdio.
+[`vt-mcp` 0.9.9 from PyPI](https://pypi.org/project/vt-mcp/0.9.9/) for local stdio.
 The package and the public source repository,
 [VirusTotal/virustotal-mcp](https://github.com/VirusTotal/virustotal-mcp), use
 Apache-2.0. Installation from PyPI does not require a GitHub account. The historical
@@ -40,8 +40,9 @@ Registry metadata **0.9.8** aligns its version with the existing **vt-mcp 0.9.8*
 The description identifies this as the official VirusTotal MCP server: “official”
 refers to VirusTotal ownership, not a Registry endorsement or compatibility badge.
 
-When a client cannot transmit file bytes, missing-file guidance offers the existing
-VirusTotal web upload followed by a hash report lookup. That external upload
+Missing-report guidance keeps the result unknown and requests no upload. If the
+user explicitly requests submission and the client cannot transmit file bytes,
+the existing VirusTotal web upload can follow a confirmed missing hash report. That external upload
 creates no VTAI receipt or registered analysis ID. Sharing guidance and permissions
 still apply, and repeated queries still count toward existing quotas.
 It retains URL submission, domain/IP reanalysis and caller-retained request IDs,
@@ -77,10 +78,10 @@ use the [manual setup](clients.md).
 
 The ten common tools include file and URL submission, domain/IP reanalysis and
 receipt recovery. Local stdio adds `submit_local_file`; a hosted backend can
-separately enable `submit_chatgpt_file` through the
-[ChatGPT attachment contract](hosted-clients.md#chatgpt-attachments). Use the
+separately enable `submit_attachment` through the
+[client-neutral attachment contract](hosted-clients.md#attachment-downloads). Use the
 connection's advertised tools to determine which adapter is available.
-Before a network operation, retain a canonical
+For a network operation explicitly requested by the user, retain a canonical
 lowercase UUIDv4 `request_id`; after interruption recover the same receipt, without
 automatically repeating POST. Standard sharing applies. OAuth network writes require
 `vt:reports:read` plus `vt:network-analysis:write`; existing grants do not expand

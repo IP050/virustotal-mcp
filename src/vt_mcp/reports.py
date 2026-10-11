@@ -100,88 +100,22 @@ class VTAIError(Exception):
 
 
 SHARING_NOTICE = (
+    "Submit files or request network analyses only when the user explicitly asks. "
     "Standard VirusTotal submissions share content with the security community and partners; "
-    "they are not confidential. Submit unfamiliar downloads, attachments, binaries or scripts "
-    "of unknown origin and suspicious URLs: this is how VirusTotal improves protection "
-    "for everyone. "
-    "Ask before submitting the user's own documents, internal code, credentials or personal data. "
-    "This sensitive-content rule also applies to attachments and unfamiliar files. "
+    "they are not confidential. Ask before sharing the user's own documents, internal code, "
+    "credentials or personal data, including in attachments and unfamiliar files. "
     "Submission tools add no per-call confirmation; client permissions still apply."
 )
 WEB_UPLOAD_URL = "https://www.virustotal.com/gui/home/upload"
 
 
 def file_not_found_steps(interface: str, tools: set[str] | None = None) -> list[str]:
-    """Describe a possible next action using the connection's actual capabilities."""
-    steps = ["Verify the hash and keep the result unknown; a missing report is not safe."]
-    if tools is not None and not tools.intersection(
-        {"submit_file", "submit_local_file", "submit_chatgpt_file"}
-    ):
-        steps.append(
-            "To analyze an unfamiliar file, use a client with file submission enabled and "
-            "provide its actual file bytes. This connection has no file submission tool."
-        )
-    else:
-        if interface == "rest":
-            action = (
-                "compute their SHA256 and POST the bytes to /api/v3/submissions/{sha256} "
-                "with Content-Type: application/octet-stream and X-VTAI-Consent: standard-v1"
-            )
-        else:
-            choices = []
-            if tools is not None and "submit_chatgpt_file" in tools:
-                choices.append(
-                    "for a ChatGPT attachment, call submit_chatgpt_file with its host-provided "
-                    "file object and retain the returned SHA256"
-                )
-            if interface == "stdio" and (tools is None or "submit_local_file" in tools):
-                choices.append("call submit_local_file with the file path")
-            if tools is None or "submit_file" in tools:
-                choices.append(
-                    "compute their SHA256 and call submit_file with that hash and base64 bytes"
-                )
-            action = ", or ".join(choices)
-        steps.append(
-            f"For an unfamiliar file, submit its actual file bytes for analysis: {action}."
-        )
-        if interface == "remote":
-            steps.append(
-                "The remote server cannot read a client's local path "
-                + (
-                    "and only submit_chatgpt_file can fetch an allowed host-provided attachment."
-                    if tools is not None and "submit_chatgpt_file" in tools
-                    else "or fetch file bytes from a URL."
-                )
-            )
-        if interface == "rest":
-            recover = "GET /api/v3/submissions/{sha256} and GET /api/v3/analyses/{analysis_id}"
-        else:
-            reads = [
-                name
-                for name in ("get_submission", "get_analysis")
-                if tools is None or name in tools
-            ]
-            recover = " and ".join(reads)
-        if recover:
-            steps.append(
-                "For uploads through this connection, recover the receipt and its analysis "
-                f"with {recover}; "
-                "never repeat an uncertain upload."
-            )
-    lookup = "GET /api/v3/files/{hash}" if interface == "rest" else "get_file_report(hash)"
-    steps.extend(
-        [
-            "If this client cannot transmit the file bytes, offer the user "
-            f"{WEB_UPLOAD_URL} under the same sharing guidance. "
-            "Do not use this option to bypass permissions or quota errors.",
-            "After the user uploads via the website, obtain the file's hash and read its "
-            f"report with {lookup}. Web uploads do not create VTAI receipts or register "
-            "analysis IDs here. The report may not be available yet; every repeated lookup "
-            "consumes quota, including missing or cached reports.",
-        ]
-    )
-    steps.extend(["A hash alone cannot start a file analysis.", SHARING_NOTICE])
-    return steps
+    """Keep lookup recovery read-only, independent of available submission tools."""
+    return [
+        "Verify the hash and keep the result unknown; a missing report is not safe.",
+        "This lookup retrieves existing reports and does not authorize a file submission.",
+        "Every report lookup consumes query quota, including missing or cached reports.",
+    ]
 
 
 def report_http_error(
@@ -232,34 +166,6 @@ def report_http_error(
                 "This lookup retrieves existing reports; it does not submit domains or IPs "
                 "for analysis."
             )
-        if kind in {"url", "domain", "ip"}:
-            operation = {"url": "submit_url", "domain": "reanalyze_domain", "ip": "reanalyze_ip"}[
-                kind
-            ]
-            submit = (
-                "POST JSON with indicator_type and indicator to "
-                "/api/v3/network-submissions/{request_id}, using Content-Type: application/json "
-                "and X-VTAI-Consent: standard-v1"
-                if interface == "rest"
-                else f"call {operation} with the indicator and request_id"
-            )
-            recover = (
-                "GET /api/v3/network-submissions/{request_id}"
-                if interface == "rest"
-                else "get_submission(request_id)"
-            )
-            steps.extend(
-                [
-                    "For a needed analysis, follow the sharing guidance and retain a new "
-                    "canonical lowercase UUIDv4 request_id first, "
-                    f"then {submit}.",
-                    f"After interruption recover with {recover}; never automatically replay an "
-                    "uncertain POST or replace its request ID. Use the registered analysis_id and "
-                    "request_id to read the selected analysis.",
-                ]
-            )
-            if kind == "url":
-                steps.append(SHARING_NOTICE)
         return recovery(
             VTAIError(
                 "not_found",

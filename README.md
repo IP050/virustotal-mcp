@@ -93,7 +93,7 @@ In ChatGPT, prefix the prompt with `@VirusTotal`. A report lookup does not read 
 For local stdio, install [uv](https://docs.astral.sh/uv/getting-started/installation/) and run:
 
 ```bash
-uv tool install --python 3.12 --default-index https://pypi.org/simple 'vt-mcp==0.9.8'
+uv tool install --python 3.12 --default-index https://pypi.org/simple 'vt-mcp==0.9.9'
 vt-mcp --version
 ```
 
@@ -110,13 +110,13 @@ Open your client's **Agent Token** alternative in the [setup guide](https://ai.v
 If your client runs a manually installed `vt-mcp` executable, upgrade that environment:
 
 ```sh
-uv tool install --upgrade --python 3.12 --default-index https://pypi.org/simple 'vt-mcp==0.9.8'
+uv tool install --upgrade --python 3.12 --default-index https://pypi.org/simple 'vt-mcp==0.9.9'
 vt-mcp --version
 ```
 
 A client configured with `uvx ... vt-mcp==<version>` uses that pinned version, independently of the installed executable. Update its pin or use the setup guide. Hosted HTTP connections use the deployed server; they do not need a local package upgrade. Keep existing tokens and submission receipts.
 
-Missing-report, quota and temporary-service errors include `next_steps` and a documentation link. For unfamiliar files without a report, submit their actual bytes using the available file submission tools and the sharing guidance below. A hash alone cannot start an analysis. An unknown URL can use `submit_url`; domain and IP analyses can be refreshed with `reanalyze_domain` and `reanalyze_ip`. Retain a new UUIDv4 `request_id` before an intended network operation, then recover using that ID. VTAI report lookups do not explicitly submit an analysis request. On quota or temporary service failures, honor `retry_after_seconds` when present, retain credentials and avoid tight retry loops. Never automatically replay an uncertain submission or replace its request ID: recover its receipt first.
+Missing-report, quota and temporary-service errors include `next_steps` and a documentation link. A missing report leaves the file or indicator unknown; verify its hash or value. Report lookups never authorize a submission or reanalysis. Use submission tools only when the user explicitly requests that action, under the sharing guidance below. Retain the file's SHA256 or a new UUIDv4 `request_id` for an intended network operation, then recover using that identifier. On quota or temporary service failures, honor `retry_after_seconds` when present, retain credentials and avoid tight retry loops. Never automatically replay an uncertain submission or replace its request ID: recover its receipt first.
 
 ## Antigravity IDE
 
@@ -149,7 +149,7 @@ The source archive also includes recipes for Qwen Code, Kimi Code and OpenCode. 
 | `get_domain_report(domain)` | Retrieve domain intelligence; no scheme, path or port. |
 | `get_ip_report(ip)` | Retrieve intelligence for one IPv4 or IPv6 address. |
 | `submit_file(sha256, content_base64)` | Submit authorized bytes for standard analysis, up to 24,000,000 decoded bytes. |
-| `submit_chatgpt_file(file)` | **Hosted HTTP adapter:** submit a ChatGPT-provided attachment object, up to 24,000,000 bytes; returns its SHA256 for recovery. |
+| `submit_attachment(file)` | **Hosted HTTP adapter:** submit an original file from a public HTTPS download URL, up to 24,000,000 bytes; returns its SHA256 for recovery. |
 | `submit_url(url, request_id)` | Request standard analysis of an HTTP(S) URL; retain a new UUIDv4 request ID before calling. |
 | `reanalyze_domain(domain, request_id)` | Request domain reanalysis with a retained request ID. |
 | `reanalyze_ip(ip, request_id)` | Request IP address reanalysis with a retained request ID. |
@@ -157,19 +157,19 @@ The source archive also includes recipes for Qwen Code, Kimi Code and OpenCode. 
 | `get_analysis(analysis_id, request_id=None)` | Read a registered analysis; pass the network receipt's request ID to distinguish operations. |
 | `submit_local_file(path, expected_sha256=None)` | **Local stdio only:** submit a copy of a regular file, up to 32,000,000 bytes. An expected digest must match that copy. |
 
-Ten common tools are available through HTTP and stdio. The public hosted backend advertises eleven to remote clients, including `submit_chatgpt_file` with the [ChatGPT attachment contract](https://github.com/VirusTotal/virustotal-mcp/blob/main/docs/hosted-clients.md#chatgpt-attachments). That adapter requires a ChatGPT-provided file object even when other clients discover it. Local stdio instead adds `submit_local_file` for eleven local tools. The server binding is verified, while native ChatGPT attachment handling remains unverified. The remote server cannot read paths on your device. Local file access is limited by the account running `vt-mcp` and the permissions configured in the MCP host.
+Ten common tools are available through HTTP and stdio. The hosted backend adds `submit_attachment` with the [client-neutral attachment contract](https://github.com/VirusTotal/virustotal-mcp/blob/main/docs/hosted-clients.md#attachment-downloads), for eleven remote tools. It requires a public HTTPS URL for the original file; native attachment transfer depends on the client. Existing host file objects remain accepted. Local stdio instead adds `submit_local_file` for eleven local tools. The remote server cannot read paths on your device. Local file access is limited by the account running `vt-mcp` and the permissions configured in the MCP host.
 
-For a file contribution, submit its authorized bytes under the sharing guidance below; a separate hash lookup is not required. VTAI verifies the bytes and checks the hash first: only confirmed absence permits an upload. A new file contribution and owned receipt recovery consume no query quota. If the file is already known, VTAI does not upload it and charges one query before returning its existing report; exhausted quota returns an error without the report or an upload. Explicit report lookups and `get_analysis` still count on every call, including repeats. See [file workflow quota](https://github.com/VirusTotal/virustotal-mcp/blob/main/docs/analysis.md#query-quota-for-file-workflows).
+For a file contribution explicitly requested by the user, submit its authorized bytes under the sharing guidance below; a separate hash lookup is not required. VTAI verifies the bytes and checks the hash first: only confirmed absence permits an upload. A new file contribution and owned receipt recovery consume no query quota. If the file is already known, VTAI does not upload it and charges one query before returning its existing report; exhausted quota returns an error without the report or an upload. Explicit report lookups and `get_analysis` still count on every call, including repeats. See [file workflow quota](https://github.com/VirusTotal/virustotal-mcp/blob/main/docs/analysis.md#query-quota-for-file-workflows).
 
 Unknown-file contributions have a separate allowance of **20 files per fixed minute and 500 per UTC day**, shared by each Agent Token identity or signed-in OAuth account across upload paths. Admitted attempts count even if later processing is uncertain. Do not create multiple identities or accounts to evade limits. See [contribution limits and retry behavior](https://github.com/VirusTotal/virustotal-mcp/blob/main/docs/analysis.md#file-contribution-limits).
 
 Retain the SHA256 and receipt. An uncertain submission is recovered with `get_submission` without automatically repeating its POST. Use `get_analysis` to read the registered analysis ID when available. Pending, unknown and error results remain distinct; an existing report does not prove that a new analysis completed.
 
-If the client cannot transmit file bytes, first calculate or obtain the file's SHA-256 and look up its report. Use an existing report without uploading; only a confirmed missing report permits the [VirusTotal web-upload fallback](https://github.com/VirusTotal/virustotal-mcp/blob/main/docs/analysis.md#when-the-client-cannot-transmit-file-bytes). Permission, quota or service errors do not establish absence. That external upload creates no VTAI receipt; the same sharing guidance applies.
+If the client cannot transmit file bytes, first calculate or obtain the file's SHA-256 and look up its report. Use an existing report without uploading; only an explicitly requested submission and a confirmed missing report permit the [VirusTotal web-upload fallback](https://github.com/VirusTotal/virustotal-mcp/blob/main/docs/analysis.md#when-the-client-cannot-transmit-file-bytes). Permission, quota or service errors do not establish absence. That external upload creates no VTAI receipt; the same sharing guidance applies.
 
-For a network workflow, generate and retain the canonical lowercase UUIDv4 before calling a submission tool. After interruption, use `get_submission(request_id=request_id)`; do not generate another ID to resolve uncertainty. A later intentional analysis requires a new ID. Network receipts contain no raw target. See [analysis and recovery](https://github.com/VirusTotal/virustotal-mcp/blob/main/docs/analysis.md#network-analysis-and-recovery).
+For a network analysis explicitly requested by the user, generate and retain the canonical lowercase UUIDv4 before calling a submission tool. After interruption, use `get_submission(request_id=request_id)`; do not generate another ID to resolve uncertainty. A later intentional analysis requires a new ID. Network receipts contain no raw target. See [analysis and recovery](https://github.com/VirusTotal/virustotal-mcp/blob/main/docs/analysis.md#network-analysis-and-recovery).
 
-MCP submission tools have no per-call human confirmation parameter. Configure host permissions for the operations and files in your task. Standard VirusTotal submissions share content with the security community and partners; they are not confidential. Submit unfamiliar downloads, attachments, binaries or scripts of unknown origin and suspicious URLs: this is how VirusTotal improves protection for everyone. Ask before submitting the user's own documents, internal code, credentials or personal data. This sensitive-content rule also applies to attachments and unfamiliar files. Inline content also passes through your MCP host. URL queries disclose the complete URL, including query and fragment, to VTAI and VirusTotal.
+MCP submission tools have no per-call human confirmation parameter. Configure host permissions for the operations and files in your task. Standard VirusTotal submissions share content with the security community and partners; they are not confidential. Submit files or request URL, domain or IP analyses only when the user explicitly requests that action. A missing report or unfamiliar file is not permission to submit. Ask before submitting the user's own documents, internal code, credentials or personal data. This sensitive-content rule also applies to attachments and unfamiliar files. Inline content also passes through your MCP host. URL queries disclose the complete URL, including query and fragment, to VTAI and VirusTotal.
 
 ## Configuration and diagnostics
 
@@ -190,11 +190,11 @@ For integrations beyond MCP client setup, see the [embedding guide](https://gith
 
 ## Distribution and source
 
-The [PyPI distribution](https://pypi.org/project/vt-mcp/0.9.8/) provides the local server and a source archive with consumer documentation and examples. The MCP Registry identity is **`io.github.VirusTotal/virustotal-mcp`**; its [published versions](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.VirusTotal%2Fvirustotal-mcp/versions) describe available transports and packages.
+The [PyPI distribution](https://pypi.org/project/vt-mcp/0.9.9/) provides the local server and a source archive with consumer documentation and examples. The MCP Registry identity is **`io.github.VirusTotal/virustotal-mcp`**; its [published versions](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.VirusTotal%2Fvirustotal-mcp/versions) describe available transports and packages.
 
 The [official source repository](https://github.com/VirusTotal/virustotal-mcp) contains the full development checkout, including tests, scripts and `uv.lock`; the PyPI source archive is an installation distribution.
 
-Version 0.9.8 recognizes contribution-limit errors separately from report-query quota and preserves their retry delay. It keeps the existing receipt recovery policy and never automatically retries a submission POST. See the [0.9.8 release notes](https://github.com/VirusTotal/virustotal-mcp/blob/v0.9.8/docs/releases/v0.9.8.md).
+Version 0.9.9 introduces client-neutral attachment submission, requires explicit user requests for submission guidance, keeps missing-report recovery read-only, and adds display titles to tool annotations. See the [0.9.9 release notes](https://github.com/VirusTotal/virustotal-mcp/blob/v0.9.9/docs/releases/v0.9.9.md).
 
 Version 0.9.5 introduced the existing VirusTotal web-upload fallback for clients that cannot transmit file bytes; follow the current [hash-first workflow](https://github.com/VirusTotal/virustotal-mcp/blob/main/docs/analysis.md#when-the-client-cannot-transmit-file-bytes) before uploading. Clients that can supply bytes keep the existing submission tools. Web uploads create no VTAI receipt; public-sharing guidance, sensitive-content permissions and repeated-query quotas remain unchanged. This release also fixes the package description's documentation link. See the [release notes](https://github.com/VirusTotal/virustotal-mcp/blob/v0.9.5/docs/releases/v0.9.5.md).
 

@@ -35,7 +35,7 @@ if path.exists() or path.is_symlink():
     raise SystemExit("An existing credential path is already configured.")
 request = Request(
     "https://ai.virustotal.com/api/v3/agents/register",
-    data=json.dumps({"agent_family": "vt-mcp", "agent_version": "0.9.8"}).encode(),
+    data=json.dumps({"agent_family": "vt-mcp", "agent_version": "0.9.9"}).encode(),
     headers={"Content-Type": "application/json"},
     method="POST",
 )

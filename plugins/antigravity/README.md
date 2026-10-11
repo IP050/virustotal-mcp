@@ -71,7 +71,8 @@ integration offers `submit_local_file`. See the [file workflow](https://github.c
 for the hash-first web-upload fallback when byte transfer is unavailable.
 
 Standard submissions are shared with the VirusTotal community and security
-partners. Ask before sharing your own documents, internal code, credentials or
+partners. Submit only when the user explicitly requests it. Ask before sharing
+your own documents, internal code, credentials or
 personal data. Only submit material you have the right and permission to share.
 Inline bytes also pass through MCP tool arguments, which the host or model
 provider may retain. Removing this plugin does not withdraw submitted content.

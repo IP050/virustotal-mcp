@@ -49,6 +49,12 @@ _REQUEST_ID_PATTERN = r"[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[
 RequestID = Annotated[str, Field(pattern=f"^{_REQUEST_ID_PATTERN}$")]
 _ERRORS = {
     "invalid_input": (422, "Invalid analysis or submission input", False),
+    "sensitive_file": (
+        422,
+        "This attachment's filename may identify credentials. Stop for human review; "
+        "do not rename it or use another upload path to bypass this check.",
+        False,
+    ),
     "consent_required": (422, "Explicit standard submission consent is required", False),
     "body_too_large": (413, "Submission exceeds 32000000 bytes", False),
     "inline_too_large": (

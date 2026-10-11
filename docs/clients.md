@@ -2,13 +2,13 @@
 
 For automatic setup on Linux, macOS or Windows, choose your system in the [setup guide](https://ai.virustotal.com/connect/mcp). Manual shell examples below use POSIX syntax. Native package tests cover file handling and MCP protocol behavior; historical client/model validation keeps its original platform and version scope.
 
-Current setup targets **vt-mcp 0.9.8** and the compatible VTAI service. Ten common tools cover four report lookups, `get_analysis`, `get_submission`, `submit_file`, `submit_url`, `reanalyze_domain` and `reanalyze_ip`. The hosted service advertises eleven tools, adding `submit_chatgpt_file` to all remote clients; only a ChatGPT-provided attachment object satisfies that adapter's contract. Local stdio instead adds `submit_local_file` for eleven local tools. HTTP needs no local Python installation and supports an Agent Token or browser OAuth; stdio uses the installed package and an Agent Token. Inline file submission accepts up to 24,000,000 decoded bytes; local file submission accepts up to 32,000,000 bytes. See [installation](../README.md#install-for-local-stdio) and [submission and recovery](analysis.md).
+Current setup targets **vt-mcp 0.9.9** and the compatible VTAI service. Ten common tools cover four report lookups, `get_analysis`, `get_submission`, `submit_file`, `submit_url`, `reanalyze_domain` and `reanalyze_ip`. The hosted service advertises eleven tools, adding `submit_attachment` for an original file available through a public HTTPS download URL. Native attachment transfer depends on the client. Local stdio instead adds `submit_local_file` for eleven local tools. HTTP needs no local Python installation and supports an Agent Token or browser OAuth; stdio uses the installed package and an Agent Token. Inline file submission accepts up to 24,000,000 decoded bytes; local file submission accepts up to 32,000,000 bytes. See [installation](../README.md#install-for-local-stdio) and [submission and recovery](analysis.md).
 
 The current instructions were synchronized on 2026-10-03. Dated validation records below retain their original client versions, tools and transport scope; they do not certify every current tool in each client. OAuth network writes require `vt:reports:read` plus `vt:network-analysis:write`; existing file-write grants do not expand automatically. Reconnect to approve that permission when needed. Host tool permissions and OAuth scopes are separate.
 
 Submission tools have no per-call human confirmation or consent argument. Configure the specific host permissions for files, URLs and network indicators you authorize for standard sharing; host permissions still apply. **The 0.8 submission cycle has been exercised in staging and against a production candidate. The public rollout is accepted, with separate direct SDK checks.** The [historical native-client validation](client-validation-2026-09-07.md) covers five read-only tools in 0.7, not autonomous submission. Set up protected access using the [access guide](access.md), or the [README](../README.md#connect-your-client).
 
-VT-MCP provides the submission capability; the client owner configures whether the host may use it without asking again. Agy, Claude Code and Codex have separate authorization policies. A tool appearing in discovery is not an approval, and a host prompt or denial is not a new VT-MCP consent requirement. The client-specific grants below preserve that distinction.
+VT-MCP provides the submission capability. Use it only when the user explicitly requests the submission or reanalysis; host permissions also apply. Agy, Claude Code and Codex have separate authorization policies. A tool appearing in discovery is not an approval, and a host prompt or denial is not a new VT-MCP consent requirement. The client-specific grants below preserve that distinction.
 
 Start with [Antigravity CLI (`agy`)](#antigravity-cli-agy), [Claude Code](#claude-code), or [Codex CLI](#codex-cli--remote-http). Other client guides follow those three.
 
@@ -407,10 +407,10 @@ Claude's fixed-header organization beta can use VTAI Bearer when an eligible org
 
 ## Try the tools
 
-Current discovery has eleven hosted HTTP tools (including the ChatGPT attachment
-adapter), or eleven local stdio tools (including `submit_local_file`). For an
-existing report, use the read-only examples below. For an authorized file, use
-`submit_file` with SHA-256 and base64 bytes, or local stdio `submit_local_file`
+Current discovery has eleven hosted HTTP tools (including the client-neutral
+attachment adapter), or eleven local stdio tools (including `submit_local_file`). For an
+existing report, use the read-only examples below. For a file submission explicitly
+requested by the user, use `submit_file` with SHA-256 and base64 bytes, or local stdio `submit_local_file`
 with its path. Follow the [autonomous workflow](analysis.md#autonomous-mcp-workflow):
 keep the SHA-256, recover with `get_submission` if needed, and read the returned
 analysis ID. A tool invocation is not proof of upload or completion: inspect

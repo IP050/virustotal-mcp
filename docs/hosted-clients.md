@@ -12,29 +12,36 @@ and also accepts a static VTAI Agent Token through one credential header,
 including `Authorization: Bearer`. The service's ten common tools cover four report
 lookups, file and URL submission, domain/IP reanalysis, and receipt and analysis
 reads. Protected-resource and authorization-server metadata, DCR and CIMD are
-live. The public hosted backend advertises eleven tools, including
-`submit_chatgpt_file` to all remote clients. Only a ChatGPT-provided attachment
-object satisfies that adapter's input contract; discovery does not establish
-that another host can supply it. Local stdio instead adds `submit_local_file`; remote HTTP
-cannot read local paths. A successful CLI session does not establish a different
-hosted account or model workflow.
+live. The hosted backend advertises eleven tools, including `submit_attachment`
+for an original file available through a public HTTPS URL. Discovery does not
+establish that a client can provide an attachment's original bytes or URL. Local
+stdio instead adds `submit_local_file`; remote HTTP cannot read local paths.
+A successful CLI session does not establish another hosted account or workflow.
 
 ## File transfer depends on the host
 
-When the client can supply the actual bytes, use `submit_file` with their SHA-256
+For a file submission explicitly requested by the user, when the client can
+supply the actual bytes, use `submit_file` with their SHA-256
 and base64 content. Remote HTTP does not by itself prevent file transfer, and an
 attachment in chat does not by itself prove that the host can access its bytes.
 
-### ChatGPT attachments
+### Attachment downloads
 
-When the deployed backend advertises `submit_chatgpt_file`, ChatGPT can supply
-an attached file through its [file-input contract](https://developers.openai.com/plugins/reference#define-file-inputs).
-The tool accepts one `file` object with required `download_url` and `file_id`
-strings and optional `mime_type` and `file_name` strings. ChatGPT supplies these
-values; do not invent a URL or paste credentials. The metadata
-`openai/fileParams: ["file"]` identifies this input to the host.
+Use `submit_attachment` only when the user explicitly requests submission of the
+selected original file. It accepts one `file` object with a required public HTTPS
+`download_url` string and optional `file_id`, `mime_type` and `file_name` strings.
+Use a user-selected or host-provided download URL for the original bytes; never
+invent a URL, paste credentials or substitute a local path. Metadata does not
+establish permission to submit the file.
 
-The backend downloads an allowed host-provided attachment with bounded time and
+The optional fields retain compatibility with existing host file objects. The
+`openai/fileParams: ["file"]` metadata is preserved for hosts that use that
+[file-input extension](https://developers.openai.com/plugins/reference#define-file-inputs).
+Other clients can supply the same neutral descriptor when they can provide a
+reachable public HTTPS URL. This does not establish native attachment support in
+Claude or any other specific host.
+
+The backend downloads the original attachment with bounded time and
 size (24,000,000 bytes), hashes its original bytes and uses the existing file
 submission permission and receipt flow. A successful response supplies the
 SHA256 for `get_submission`; use its registered analysis ID with `get_analysis`.
@@ -47,7 +54,8 @@ is not uploaded; returning its existing report consumes one query and is denied
 when quota is exhausted. Owned receipt recovery costs no query, while report and
 analysis reads count on every call. See [file workflow quota](analysis.md#query-quota-for-file-workflows).
 
-Standard sharing and sensitive-content permission still apply. A supplied
+An explicit user request, standard sharing and sensitive-content permission still
+apply. A supplied
 `file_name` is checked against the same short credential-name list as the Claude
 plugin. It is optional, unverified metadata, not proof of the real filename or
 file contents. Do not omit or rename it, encode bytes or change upload channels
@@ -55,14 +63,15 @@ to evade a denial.
 
 This is a hosted-only capability; stdio does not expose the tool. If it is absent,
 refresh the connection's tool inventory after the backend deployment. These
-instructions and protocol tests do not establish an end-to-end ChatGPT attachment
-test or availability in every account.
+instructions and protocol tests do not establish native attachment transfer or
+availability in every account.
 
 ### Existing web fallback
 
 If the client cannot transmit those bytes, first calculate the file's SHA-256
 locally, or ask the user for it, and call `get_file_report(hash)`. Use an existing
-report without uploading. Only a confirmed missing report permits offering the
+report without uploading. Only an explicitly requested submission and a confirmed missing report permit
+offering the
 existing [VirusTotal upload page](https://www.virustotal.com/gui/home/upload).
 Permission, quota or service errors do not establish absence. Standard
 uploads are not confidential and share content with the security community and

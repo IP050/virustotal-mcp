@@ -51,11 +51,12 @@ and the [privacy notice](https://cloud.google.com/terms/secops/privacy-notice).
 
 Report lookups retrieve existing intelligence. File submissions, URL analysis and
 domain/IP reanalysis use separate write tools and permissions. Standard
-submissions are shared with the VirusTotal community and security partners. Ask
+submissions require the user's explicit request and are shared with the VirusTotal
+community and security partners. Ask
 before sharing the user's own or sensitive content, and respect host confirmation
-and permission controls. The remote service cannot read a device path. A Gemini
-attachment is not a ChatGPT attachment, and a model must not invent attachment
-URLs, hashes or base64. See [submission and recovery](analysis.md) for supported
+and permission controls. The remote service cannot read a device path. An attachment in chat does not establish that the host
+can supply its original bytes or a reachable public HTTPS download URL. A model
+must not invent attachment URLs, hashes or base64. See [submission and recovery](analysis.md) for supported
 byte transfer and the hash-first web-upload alternative.
 
 Every explicit report or analysis read consumes query quota, including repeats,
@@ -248,7 +249,7 @@ If the CLI offers a Git-clone fallback for that branch, accept it. Git is requir
 There is no Python process, package installation or token-setting prompt in this
 extension: it connects to the hosted service using OAuth.
 
-Extension version **0.9.8** includes the portable
+Extension version **0.9.9** includes the portable
 [`virustotal-threat-intelligence` skill](../skills/virustotal-threat-intelligence/README.md).
 Gemini CLI discovers it from the extension's `skills/` directory. Its instructions
 use the existing connection and do not change OAuth scopes or tool permissions.
@@ -282,9 +283,9 @@ Run an actual report query to verify the connection:
 
 Inspect the tool result. A connected status or successful install alone does not
 establish that a model called a tool. The hosted service advertises eleven tools:
-ten common report, submission and recovery tools, plus `submit_chatgpt_file`.
-The attachment adapter appears in remote discovery but requires a file object
-supplied by ChatGPT; it is not a Gemini upload path. Local stdio instead adds
+ten common report, submission and recovery tools, plus `submit_attachment`.
+That tool requires a public HTTPS URL for the original file; its presence does
+not establish native Gemini attachment transfer. Local stdio instead adds
 `submit_local_file` to the ten common tools.
 
 Maintain or remove the extension with:

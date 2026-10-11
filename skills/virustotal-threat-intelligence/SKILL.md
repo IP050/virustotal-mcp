@@ -29,9 +29,9 @@ replace the connected tools.
 
 ## Authorized analysis and recovery
 
-Existing reports and new analyses are different actions. Before a submission or
-reanalysis, establish that the user authorizes sharing that content and honor
-the host's permissions and confirmations. Standard submissions are shared with
+Existing reports and new analyses are different actions. Submit or reanalyze only
+when the user explicitly requests that action and authorizes sharing that content.
+Honor the host's permissions and confirmations. Standard submissions are shared with
 the VirusTotal community and security partners. Ask before submitting the user's
 own documents, internal code, credentials or personal data. An attachment or an
 executable extension alone does not grant permission to disclose it.
@@ -39,14 +39,16 @@ executable extension alone does not grant permission to disclose it.
 For files, a hash alone cannot start an analysis. Use `submit_file` only when an
 available host capability can supply the original bytes programmatically and
 their verified lowercase SHA-256, within the tool's stated limit. Do not invent
-hashes, transcribe base64, send `file:<path>` to a remote server or treat a Gemini
-attachment as a ChatGPT attachment. This skill contains no upload hook. The
-server checks whether the file is already known before deciding to upload it;
+hashes, transcribe base64 or send `file:<path>` to a remote server. Use
+`submit_attachment` only when the host supplies a reachable public HTTPS URL for
+the original file, or the user selects that URL explicitly; never invent one.
+This skill contains no upload hook. The server checks whether the file is already known before deciding to upload it;
 do not duplicate that precheck when supplying authorized bytes.
 
 When the host cannot transfer the bytes, use an actual supplied file hash to
-retrieve the existing report. Only a confirmed missing report permits offering
-the VirusTotal web-upload interface for an authorized submission by the user.
+retrieve the existing report. Only an explicitly requested submission and a
+confirmed missing report permit offering the VirusTotal web-upload interface for
+submission by the user.
 Then query the same hash. A web upload does not create a VTAI receipt and must
 not replace recovery of an uncertain operation or bypass a rejection.
 
@@ -54,8 +56,8 @@ Retain a submitted file's SHA-256 and receipt. If the result is uncertain, use
 `get_submission(sha256=...)` on the same connection instead of sending the file
 again. A missing receipt does not establish that no upload happened.
 
-For an authorized URL analysis or domain/IP refresh, use `submit_url`,
-`reanalyze_domain` or `reanalyze_ip` only if available. Obtain and retain a new
+For a URL analysis or domain/IP refresh explicitly requested by the user, use
+`submit_url`, `reanalyze_domain` or `reanalyze_ip` only if available. Obtain and retain a new
 lowercase UUIDv4 `request_id` before the intended operation. If a valid ID cannot
 be obtained, stop before submission. Recover uncertainty with
 `get_submission(request_id=...)` on the same connection; never replay the write

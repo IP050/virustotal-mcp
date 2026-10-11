@@ -86,6 +86,7 @@ async def test_receipt_discovery_is_bounded_for_each_submission_binding(file, ne
         tools = {tool.name: tool for tool in (await client.list_tools()).tools}
     receipt = tools["get_submission"]
     assert receipt.annotations.model_dump(by_alias=True, exclude_none=True) == {
+        "title": "Get a VTAI submission receipt",
         "readOnlyHint": True,
         "destructiveHint": False,
         "idempotentHint": True,

@@ -61,7 +61,7 @@ detector. The reader has its own path scope; it does not implement Claude Code's
 Read/Bash path rules or provide an operating-system sandbox.
 
 A valid expansion returns `permissionDecision: allow` automatically. The agent
-decides whether sharing is appropriate; the hook does not add a confirmation for
+checks the user explicitly requested submission and authorized sharing; the hook does not add a confirmation for
 each file. Ask before sharing the user's own documents, internal code,
 credentials or personal data. If a credential filename is blocked, stop for
 human review; do not rename, encode or switch upload methods to bypass it.
@@ -69,7 +69,8 @@ human review; do not rename, encode or switch upload methods to bypass it.
 ## Sharing, quota and recovery
 
 Standard submissions are shared with the VirusTotal community and security
-partners. Submit only material you have the right and permission to share.
+partners. Submit only when the user explicitly requests that action and has the
+right and permission to share the material.
 The server verifies the original bytes and checks the hash before uploading;
 only a confirmed missing report permits a new contribution. New-file
 contributions and receipt recovery use no report-query quota. Returning an

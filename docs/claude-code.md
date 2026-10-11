@@ -140,8 +140,8 @@ identity, not independent authentication of its endpoint: connect the official
 
 ## Sharing and alternatives
 
-Submit unfamiliar downloads, attachments, binaries or scripts of unknown origin
-and suspicious URLs: this is how VirusTotal improves protection for everyone.
+Submit files or request URL, domain or IP analyses only when the user explicitly
+requests that action. A missing report or unfamiliar file is not permission to submit.
 Ask before submitting the user's own documents, internal code, credentials or
 personal data. An attachment or executable extension does not establish consent
 to share private content. Standard submissions are shared with the VirusTotal
@@ -150,8 +150,8 @@ permission to share.
 
 If a client cannot transfer the original bytes and the plugin is unavailable,
 first calculate the file's SHA-256 locally, or ask the user for it, and call
-`get_file_report(hash)`. Use an existing report without uploading. Only a confirmed
-missing report permits using the existing
+`get_file_report(hash)`. Use an existing report without uploading. Only an explicitly requested submission and a confirmed
+missing report permit using the existing
 [VirusTotal web uploader](https://www.virustotal.com/gui/home/upload), then reading
 the same hash again. Permission, quota or service errors do not establish absence.
 A web upload has no VTAI submission receipt. Every report query counts, including
@@ -186,7 +186,9 @@ was uploaded, its original bytes verified after the hook, its receipt recovered
 and its completed analysis read with the matching SHA-256. All ten general
 VirusTotal tools were exercised, including once-only URL, domain and IP analysis
 requests, receipt recovery and completed results. An invalid IP returned the
-expected error. The ChatGPT-only attachment tool is not a Claude upload path.
+expected error. That session did not validate native attachment transfer. The current
+`submit_attachment` descriptor requires a reachable public HTTPS URL for the
+original file; it does not establish native Claude attachment support.
 
 Earlier native Claude Code 2.1.283 tests used an imported OAuth connection for
 100,000-byte, 1,000,000-byte and 24,000,000-byte public fixtures, with matching

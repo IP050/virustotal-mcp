@@ -60,6 +60,7 @@ async def test_tool_surface_and_structured_result(file_hash, report, indicator_r
             "get_ip_report": ("ip", "192.0.2.1", "ip_addresses"),
         }
         for tool in tools:
+            assert tool.annotations.title == tool.title
             if tool.name in {
                 "get_submission",
                 "submit_file",
