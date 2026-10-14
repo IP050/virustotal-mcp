@@ -344,7 +344,7 @@ query reached VTAI, but Google's tool steps and report output could not be
 recovered. This does not establish MCP incompatibility or a completed workflow.
 
 On 2 October 2026, Agy 1.2.14 validated and installed the Antigravity plugin.
-The manifest contains only the documented `name` and `description` fields; its
+That manifest contained only the documented `name` and `description` fields; its
 remote connection uses `serverUrl`. The native OAuth flow completed browser
 sign-in, explicit consent, Google's callback page and code entry in Agy's own
 authentication dialog. A fresh Agy 1.2.15 session then used that connection for
@@ -360,6 +360,16 @@ was not tested as a separate connection.
 Automatic token renewal, file submissions, network reanalysis and the graphical
 applications have not been exercised with this plugin. Marketplace acceptance
 is a separate review process.
+
+On 14 October 2026, Agy 1.2.15 and 1.3.5 validated and installed plugin 0.1.0
+with its single root manifest, packaged icon and three suggested report prompts.
+Both detected its skill and MCP server and identified the source as `antigravity`;
+1.3.5 also reported version 0.1.0. The installed manifest, icon, skill and MCP
+configuration matched the source bytes. These offline checks compared root,
+hidden and combined manifest layouts; only the root layout worked in both
+versions without competing manifests. They did not repeat OAuth or queries,
+verify graphical rendering of the icon and prompts, or establish Marketplace
+acceptance.
 
 On 23 September 2026, Gemini CLI 0.58.0 installed the exact extension manifest
 from a local checkout in an isolated client configuration. Its native extension

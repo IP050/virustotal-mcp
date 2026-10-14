@@ -1,4 +1,12 @@
 {
   "name": "virustotal",
-  "description": "Investigate files, URLs, domains and IP addresses with VirusTotal threat intelligence, analysis and submission recovery."
+  "displayName": "VirusTotal",
+  "version": "0.1.0",
+  "description": "Investigate files, URLs, domains and IP addresses with VirusTotal threat intelligence, analysis and submission recovery.",
+  "logo": "assets/virustotal-icon-512.png",
+  "suggestedPrompts": [
+    "Retrieve the existing VirusTotal report for example.com. Do not submit it for analysis.",
+    "Look up the existing VirusTotal report for file hash 44d88612fea8a8f36de82e1278abb02f.",
+    "Retrieve the existing VirusTotal report for IP address 8.8.8.8. Do not request a new analysis."
+  ]
 }

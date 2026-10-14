@@ -3,6 +3,8 @@
 Investigate file hashes, URLs, domains and IP addresses with VirusTotal reports.
 This plugin bundles the remote MCP connection and a `threat-intelligence` skill
 for report interpretation, authorized submissions and receipt recovery.
+Version 0.1.0 also packages the VirusTotal icon and three suggested prompts for
+existing reports.
 
 It complements the existing [Agy local stdio integration](https://github.com/VirusTotal/virustotal-mcp/blob/main/docs/clients.md#antigravity-cli-agy)
 and [VT Sentinel extension for Antigravity IDE](https://open-vsx.org/extension/virustotal/vt-sentinel),
@@ -22,9 +24,9 @@ agy plugin install ./virustotal-mcp/plugins/antigravity
 agy plugin list
 ```
 
-Review the plugin directory before installing. Agy 1.2.14 installs a local
-directory; pass the `plugins/antigravity` subdirectory, not a GitHub URL or the
-repository root. If you already have a checkout, use its local path instead.
+Review the plugin directory before installing. Local validation and installation
+were checked with Agy 1.2.15 and 1.3.5; pass the `plugins/antigravity` subdirectory,
+not the repository root. If you already have a checkout, use its local path instead.
 The interactive `/plugin` manager also accepts **Install from local directory**.
 See Google's [plugin guide](https://antigravity.google/docs/plugins/).
 

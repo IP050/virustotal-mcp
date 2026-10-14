@@ -7,6 +7,7 @@ import hashlib
 import http.client
 import json
 import os
+import re
 import time
 import tomllib
 import urllib.error
@@ -130,7 +131,21 @@ def check_manifest(name, body, version):
             == ["vt:reports:read", "vt:submissions:write", "vt:network-analysis:write"]
         )
     elif name == "antigravity_manifest":
-        valid = set(data) == {"name", "description"} and data["name"] == "virustotal"
+        prompts = data.get("suggestedPrompts")
+        valid = (
+            set(data)
+            == {"name", "displayName", "version", "description", "logo", "suggestedPrompts"}
+            and data["name"] == "virustotal"
+            and data["displayName"] == "VirusTotal"
+            and isinstance(data["version"], str)
+            and re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", data["version"]) is not None
+            and isinstance(data["description"], str)
+            and bool(data["description"].strip())
+            and data["logo"] == "assets/virustotal-icon-512.png"
+            and isinstance(prompts, list)
+            and len(prompts) == 3
+            and all(isinstance(prompt, str) and prompt.strip() for prompt in prompts)
+        )
     else:
         valid = data == {"mcpServers": {"virustotal": {"serverUrl": RESOURCE}}}
     if not valid:
