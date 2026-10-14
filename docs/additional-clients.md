@@ -1,13 +1,15 @@
 # Additional remote MCP clients
 
-These configuration recipes connect to **`https://ai.virustotal.com/mcp`**.
-They follow the linked client documentation; authenticated VirusTotal workflows
-in these clients have not been verified for this guide. Configuring a connector
-does not establish a successful tool call or a public directory listing.
+These clients use **`https://ai.virustotal.com/mcp`**. Grok Build and Kimi Code
+have the bounded native checks described below. Other recipes follow client
+documentation; Qwen Code has a known OAuth incompatibility. Configuring a
+connector does not establish a successful tool call or a public directory listing.
 
 | Client | Route | Validation level |
 | --- | --- | --- |
-| [Qwen Code](#qwen-code) | HTTP MCP with browser OAuth | Documented configuration |
+| [Grok Build](#grok-build-and-kimi-code) | Manual plugin with browser OAuth | Reports, renewal and revocation checked in 1.0.50 on Linux |
+| [Kimi Code](#grok-build-and-kimi-code) | Manual plugin with browser OAuth | Reports and proactive renewal checked in 2.1.1 with an external model |
+| [Qwen Code](#qwen-code) | HTTP MCP with browser OAuth | Blocked in 0.25.1 after browser consent; no native tool call |
 | [Mistral Vibe Work](#mistral-vibe-work) | Custom MCP connector with OAuth | Documented configuration |
 | [Grok web](#grok-web) | Custom MCP connector with OAuth | Documented configuration |
 | [xAI Responses API](#xai-responses-api) | Remote MCP with a VTAI Agent Token | Documented API example |
@@ -18,7 +20,41 @@ required. Review the permissions requested by the client and approve the
 connection only if they fit your intended use. The VTAI consent screen approves
 or cancels the requested set; it does not offer individual scope checkboxes.
 
+## Grok Build and Kimi Code
+
+Install the [Grok Build plugin](../plugins/grok-build/README.md#install-from-source)
+or [Kimi Code plugin](../plugins/kimi/README.md#install-in-kimi-code), then complete
+VTAI browser sign-in. Model access is separate from the VirusTotal connection.
+These are manual installation routes, not evidence of marketplace acceptance.
+
+- **Grok Build 1.0.50, Linux, 11 October 2026:** plugin installation/removal,
+  browser OAuth, an existing domain report, a missing-file report, automatic
+  renewal after natural token expiry and rejection following grant revocation
+  were verified. The missing report stayed unknown without an upload attempt.
+  Only two report tools were exercised; uploads, native attachments, other
+  platforms and the Connections UI were not validated.
+- **Kimi Code 2.1.1, 12 October 2026:** the published plugin 0.1.0 completed browser
+  OAuth, existing domain reports and a missing-file report using an external
+  Nemotron model through OpenRouter. Kimi renewed its tokens proactively and
+  returned a later report after the original token's expiry without another
+  login. Four report tools were visible to the model with manual approval;
+  that selection did not narrow OAuth scopes. No upload or reanalysis was
+  attempted. Revocation was checked directly against VTAI, not through Kimi's
+  native UI. Kimi Work/web, Moonshot model access and directory acceptance were
+  not validated by these checks.
+
 ## Qwen Code
+
+**Known limitation in Qwen Code 0.25.1:** browser consent completes, but its
+credential store discards tokens with 300 seconds or less remaining before
+renewal can access them. VTAI access tokens last 300 seconds, so this client
+cannot establish the native MCP connection and discovers no VirusTotal tools.
+The issue was reproduced in the unmodified client on 12 October 2026. Repeated
+sign-in does not fix this tested version. No native VirusTotal report call was
+validated; model-provider access alone does not establish MCP compatibility.
+
+The following documents the configuration for retesting after a client fix; it
+is not a working OAuth recipe for 0.25.1.
 
 With [Qwen Code installed](https://qwenlm.github.io/qwen-code-docs/en/users/quickstart/),
 run these POSIX shell commands. Reuse an existing `virustotal` entry if present.
@@ -181,5 +217,6 @@ separate [revocation procedure](access.md#revoke-access).
 
 The examples' formatting and syntax can be checked locally. Native installation,
 OAuth consent, report calls, renewal and revocation are separate acceptance
-checks; this guide does not claim those workflows were completed for the clients
-above. See the [client validation levels](clients.md#validation-levels).
+checks. The Grok Build and Kimi Code observations above apply only to their
+stated versions and workflows; the other clients have no completed native
+VirusTotal report workflow recorded here. See the [client validation levels](clients.md#validation-levels).
