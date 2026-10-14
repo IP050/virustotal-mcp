@@ -66,7 +66,7 @@ clients can use the [stdio installation](#install-for-local-stdio) below.
 | Antigravity CLI (`agy`) | [Plugin with MCP and skill](https://github.com/VirusTotal/virustotal-mcp/tree/main/plugins/antigravity), [local stdio](https://ai.virustotal.com/connect/mcp?client=agy&transport=stdio) or [native OAuth recipe](https://github.com/VirusTotal/virustotal-mcp/blob/main/docs/google-clients.md#antigravity-native-oauth) |
 | Claude Code | [OAuth plugin with local file uploads](https://github.com/VirusTotal/virustotal-mcp/blob/main/docs/claude-code.md), [HTTP](https://ai.virustotal.com/connect/mcp?client=claude&transport=http) or [local stdio](https://ai.virustotal.com/connect/mcp?client=claude&transport=stdio) |
 | Codex | [HTTP](https://ai.virustotal.com/connect/mcp?client=codex&transport=http) or [local stdio](https://ai.virustotal.com/connect/mcp?client=codex&transport=stdio) |
-| ChatGPT Work | [Personal OAuth connection](https://github.com/VirusTotal/virustotal-mcp/blob/main/docs/hosted-clients.md#chatgpt-public-connection-and-individual-oauth) |
+| ChatGPT | [Install the published VirusTotal plugin](https://chatgpt.com/plugins/plugin_asdk_app_6abadac2d9a08191ae2307c047bb3806) · [Connection guide](https://github.com/VirusTotal/virustotal-mcp/blob/main/docs/hosted-clients.md#connect-chatgpt-work) |
 | Cursor | [HTTP recipe](https://ai.virustotal.com/connect/mcp?client=cursor&transport=http) |
 | VS Code with GitHub Copilot | [HTTP recipe](https://ai.virustotal.com/connect/mcp?client=vscode&transport=http) |
 | GitHub Copilot CLI | [HTTP OAuth recipe](https://ai.virustotal.com/connect/mcp?client=copilot&transport=http) or [local stdio](https://ai.virustotal.com/connect/mcp?client=copilot&transport=stdio) |
@@ -75,17 +75,19 @@ clients can use the [stdio installation](#install-for-local-stdio) below.
 | Antigravity IDE | [Local stdio configuration](#antigravity-ide) or [native OAuth recipe](https://github.com/VirusTotal/virustotal-mcp/blob/main/docs/google-clients.md#antigravity-native-oauth) |
 | Gemini CLI | [Install the OAuth extension](https://github.com/VirusTotal/virustotal-mcp/blob/main/docs/google-clients.md#gemini-cli-extension) |
 | Gemini Apps | [Custom MCP connection](https://github.com/VirusTotal/virustotal-mcp/blob/main/docs/google-clients.md#gemini-apps-custom-connection) and optional [importable skill](https://github.com/VirusTotal/virustotal-mcp/blob/main/docs/google-clients.md#gemini-apps-skill), subject to Google's account and regional availability; complete hosted workflow validation pending |
-| Grok Build | [Manual plugin installation](https://github.com/VirusTotal/virustotal-mcp/blob/main/plugins/grok-build/README.md#install-from-source); pilot with native workflow validation pending |
-| Kimi Code | [Manual plugin installation](https://github.com/VirusTotal/virustotal-mcp/blob/main/plugins/kimi/README.md#install-in-kimi-code); pilot with native workflow validation pending |
+| Grok Build | [Manual plugin installation](https://github.com/VirusTotal/virustotal-mcp/blob/main/plugins/grok-build/README.md#install-from-source); [OAuth, reports and renewal verified](docs/additional-clients.md#grok-build-and-kimi-code) |
+| Kimi Code | [Manual plugin installation](https://github.com/VirusTotal/virustotal-mcp/blob/main/plugins/kimi/README.md#install-in-kimi-code); [OAuth, reports and proactive renewal verified with an external model](docs/additional-clients.md#grok-build-and-kimi-code) |
 
 Remote OAuth configuration for [GitHub Copilot CLI](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-command-reference) and [Devin CLI](https://docs.devin.ai/cli/extensibility/mcp/configuration) follows their official documentation; an OAuth-authenticated VirusTotal tool workflow has not yet been verified in either client.
 
 See [additional remote client recipes](docs/additional-clients.md) for Qwen Code,
 Mistral Vibe Work, Grok web and the xAI Responses API, with their validation limits.
+Qwen Code 0.25.1 has a known OAuth credential-storage incompatibility with VTAI;
+browser consent alone does not complete its connection.
 
 The [client validation guide](https://github.com/VirusTotal/virustotal-mcp/blob/main/docs/clients.md#validation-levels) distinguishes documented configuration, local transport checks and workflows exercised with a model. A recipe is not a claim of full validation in every client. Other agents can use the same MCP endpoint or the [VTAI API directly](https://ai.virustotal.com/skills/BASIC.md).
 
-In ChatGPT, creating a plugin/application and connecting your personal account are separate steps. The [ChatGPT setup guide](https://github.com/VirusTotal/virustotal-mcp/blob/main/docs/hosted-clients.md#connect-chatgpt-work) covers both, then a first MCP query in a new Work chat. Initial OAuth consent, an IP report, automatic token renewal and a subsequent report after token expiry were verified on 2026-09-24; the guide records the remaining validation limits.
+In ChatGPT, [install the published VirusTotal plugin](https://chatgpt.com/plugins/plugin_asdk_app_6abadac2d9a08191ae2307c047bb3806), connect with Google when prompted, then select `@VirusTotal` in a new chat. Developer mode is not required for the published plugin; account and workspace policies still apply. The [connection guide](https://github.com/VirusTotal/virustotal-mcp/blob/main/docs/hosted-clients.md#connect-chatgpt-work) includes the separate custom-app alternative and validation limits. Initial OAuth consent, IP reports and automatic token renewal were verified separately on 2026-09-24; publication does not validate every workflow.
 
 For a first query, ask your agent:
 

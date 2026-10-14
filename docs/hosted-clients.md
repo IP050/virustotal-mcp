@@ -2,8 +2,9 @@
 
 The tested client guides remain [Agy](clients.md#antigravity-cli-agy),
 [Claude Code](clients.md#claude-code), then [Codex](clients.md#codex-cli--remote-http).
-This page covers separate hosted connections. ChatGPT setup and validation were
-verified on 2026-09-24; the status descriptions were reconciled on 2026-10-03.
+This page covers separate hosted connections. The VirusTotal plugin is published
+in ChatGPT. Its directory listing and the earlier connection checks below are
+separate evidence.
 The [validation scope](#validation-scope) records the verified ChatGPT connection,
 IP reports and automatic renewal, earlier staging checks and remaining hosted workflows.
 
@@ -115,40 +116,52 @@ argument. The host may request confirmation independently.
 
 ## ChatGPT public connection and individual OAuth
 
-**Status: initial OAuth consent, MCP IP reports and automatic token renewal verified in ChatGPT Work on 2026-09-24.**
-Revocation from the hosted application, incremental authorization and write
-workflows remain unverified. Claude hosted acceptance is separate and remains unverified.
+**Status: [VirusTotal is published in the ChatGPT plugin directory](https://chatgpt.com/plugins/plugin_asdk_app_6abadac2d9a08191ae2307c047bb3806).**
+Browser consent, MCP IP reports and automatic token renewal were verified
+separately in ChatGPT Work on 2026-09-24. Those checks did not cover revocation
+from the hosted application, incremental authorization or writes. Publication
+does not validate every workflow or native attachment transfer.
 
 ### Connect ChatGPT Work
 
-Use an account and workspace that permit Developer mode. Enable it under
-**Settings → Security and login → Developer mode** if needed. Availability
-depends on the account and workspace policy.
+1. Open the [VirusTotal plugin](https://chatgpt.com/plugins/plugin_asdk_app_6abadac2d9a08191ae2307c047bb3806)
+   and select **Install plugin**. The published plugin does not require Developer
+   mode. Installation and use depend on your account and workspace policies.
+2. Connect VirusTotal when prompted. Continue with Google on VTAI, review the
+   permissions and select **Allow access**. If needed, open the plugin's linked
+   application and choose **Connect** under **Connected accounts**.
+3. Start a **new chat**, type **@**, select **VirusTotal**, and ask:
 
-1. In **Plugins**, use **+** to create a plugin/application named **VirusTotal**
-   with the MCP endpoint **`https://ai.virustotal.com/mcp`**. Choose **OAuth**;
-   leave optional Client ID and Client secret fields blank for automatic
-   negotiation. Reuse an existing application configured with that endpoint.
-2. Open the plugin's linked application and check **Connected accounts**.
-   Creating the application alone may not connect your account. If necessary,
-   choose **Connect** or **Connect another account**, sign in, review the
-   permissions and select **Allow access**.
-3. Install the personal plugin if it is not already installed, then start a
-   **new Work chat**. Type **@**, select **VirusTotal**, and request an explicit
-   MCP lookup:
-
-   > Use the VirusTotal MCP tool get_ip_report for 8.8.8.8. Explain the report's
-   > source, analysis date and coverage.
+   > Get the domain report for virustotal.com. Show the source, analysis date,
+   > coverage and report link.
 
 Confirm that the conversation contains the MCP tool result. An answer based on
-browsing the public VirusTotal website, including a message about JavaScript,
-does not establish that MCP was used. If the application has no connected account
-or tools, complete the account connection, refresh its tools and start a new
-chat. Keep a working account connection; a new Agent Token is not needed for OAuth.
+browsing the public VirusTotal website does not establish that MCP was used.
+If installation is unavailable, check your account and workspace policies. If
+no login opens or no tools appear, check **Connected accounts** in the plugin's
+linked application and choose **Connect** or **Connect another account** if
+needed. Refresh the application's tools if that control is available, then start
+a new chat. Keep a working account connection; an Agent Token is not needed for
+OAuth. See OpenAI's [plugin guide](https://learn.chatgpt.com/docs/plugins).
 
-This is a personal Developer mode setup, not a claim of availability in ChatGPT's
-public directory. See OpenAI's [connection guide](https://developers.openai.com/plugins/deploy/connect-chatgpt)
-and [Work chat quickstart](https://developers.openai.com/plugins/quickstart).
+### Alternative: create a custom app
+
+Use this separate route for a custom setup. It requires an account and workspace
+that permit **Developer mode**, enabled in ChatGPT settings.
+
+1. In **Plugins**, create a plugin/application named **VirusTotal**, or reuse your
+   existing custom application. Enter **`https://ai.virustotal.com/mcp`**, choose
+   **OAuth**, and leave optional **Client ID** and **Client Secret** fields blank
+   for automatic registration.
+2. Create the application and install the custom plugin if prompted. Under
+   **Connected accounts**, choose **Connect**, continue with Google, review the
+   permissions and select **Allow access**.
+3. Start a new chat and select your VirusTotal entry. Keep one working VirusTotal
+   connection. Preserve existing access and any pending submissions when
+   switching setups.
+
+Do not enter an Agent Token or VirusTotal API key in OAuth client fields or chat.
+See OpenAI's [custom connection guide](https://developers.openai.com/plugins/deploy/connect-chatgpt).
 
 ### OAuth compatibility
 
@@ -202,6 +215,8 @@ validated by this project. [Secure MCP Tunnel](https://developers.openai.com/api
 
 ## Validation scope
 
+The public [VirusTotal plugin listing](https://chatgpt.com/plugins/plugin_asdk_app_6abadac2d9a08191ae2307c047bb3806) provides the installation route. Directory publication is separate from the runtime checks below.
+
 On 2026-09-24, a ChatGPT Work application completed personal browser consent
 against production and returned an IP report through MCP. The same connection
 later renewed its token automatically and returned another IP report after the
@@ -209,8 +224,8 @@ previous access token had expired, without another consent step. Report requests
 linked to the same OAuth connection and refresh-state transitions corroborated
 these operations. This verifies initial hosted authorization, report reads and
 automatic renewal for that connection. It does not verify revocation from the
-hosted application, incremental authorization, write workflows or public-directory
-distribution. The account connection was retained for continued use.
+hosted application, incremental authorization, write workflows or the later published-plugin
+installation route. The account connection was retained for continued use.
 
 On 2026-09-14, a native Codex browser login and domain report succeeded in staging.
 These were direct client calls, not model conversations or a hosted ChatGPT test.
