@@ -138,6 +138,31 @@ class DistributionTests(unittest.TestCase):
                 json.dumps({"url": url, "state": "open", "merged": "false"}), url
             )
 
+    def test_antigravity_presentation_stays_within_the_published_package(self):
+        manifest = json.loads((ROOT / "plugins/antigravity/plugin.json").read_text())
+        self.assertEqual(
+            monitor.check_manifest("antigravity_manifest", json.dumps(manifest), "0.9.9")[0],
+            "available",
+        )
+        for changed in (
+            {"name": "another-plugin"},
+            {"displayName": "Another publisher"},
+            {"version": None},
+            {"version": "preview"},
+            {"description": " "},
+            {"logo": "https://example.com/logo.png"},
+            {"logo": "../assets/virustotal-icon-512.png"},
+            {"suggestedPrompts": ["One prompt"]},
+            {"suggestedPrompts": ["One", "Two", " "]},
+            {"suggestedPrompts": ["One", "Two", 3]},
+            {"author": {"email": "unverified@example.com"}},
+        ):
+            with self.subTest(changed=changed):
+                with self.assertRaises(monitor.CheckFailure):
+                    monitor.check_manifest(
+                        "antigravity_manifest", json.dumps(manifest | changed), "0.9.9"
+                    )
+
     def test_issue_state_is_informational_and_not_a_pull_request_approval(self):
         url = monitor.ISSUES["adk_recipe_proposal"]
         for state, expected in (("open", "pending"), ("closed", "closed")):
