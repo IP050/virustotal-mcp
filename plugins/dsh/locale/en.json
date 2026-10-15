@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "VirusTotal",
+    "description": "Check file hashes, URLs, domains and IPs with VirusTotal reports, and request an analysis when you explicitly ask for one."
+  }
+}

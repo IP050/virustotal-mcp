@@ -359,6 +359,33 @@ with its separate validation limits. [Official Antigravity MCP documentation](ht
 
 If discovery succeeds but lookups return `unavailable`, check the MCP process's HTTPS configuration. In the tested Linux environment, Antigravity supplied an incomplete `SSL_CERT_FILE` bundle. Setting `SSL_CERT_FILE` to `/etc/ssl/certs/ca-certificates.crt` in this server's `env` and reloading resolved certificate verification errors. Use the trusted CA bundle appropriate to your machine; this Linux path is not portable. TLS verification remained enabled and proxy settings were preserved.
 
+## DeepSeek Harness
+
+Install the [DSH plugin](../plugins/dsh/README.md) to add the hosted server and a
+`virustotal-threat-intelligence` skill to DeepSeek Harness. The DSH MCP client
+supports `stdio` and `streamable-http` with static headers but has **no OAuth
+flow**, so this client cannot use the browser sign-in documented for Claude Code,
+Antigravity and Gemini CLI. The plugin instead sends a static `x-apikey` header
+whose value it reads at startup from a protected token file
+(`~/.config/vt-mcp/token`, or the path named by `VTAI_TOKEN_FILE`). The token is
+not stored in the plugin, in this repository or in the conversation. Follow the
+[plugin README](../plugins/dsh/README.md) for the credential steps, the tested
+configuration and the local stdio alternative that adds `submit_local_file`.
+
+Ask the plugin's own skill for a report-only check once the tools appear:
+
+> Use VirusTotal to retrieve the existing report for `virustotal.com`. Show the
+> source, analysis date, coverage and report link. Do not request a new analysis.
+
+**Status:** Bundle installation and activation, skill registration, the
+missing-credential failure mode, discovery of the eleven hosted tools,
+`get_domain_report`, `get_url_report` and `get_file_report` calls, and a
+disable/enable cycle were verified
+on Windows with DSH Desktop 2.0.17 on 2026-10-15. Submission, reanalysis and
+receipt recovery were not exercised. Over HTTP `submit_local_file` is absent and
+the plugin ships no local upload hook, as with the
+[Antigravity plugin](../plugins/antigravity/README.md).
+
 ## Qwen Code
 
 Proposed command, documented but not executed here:

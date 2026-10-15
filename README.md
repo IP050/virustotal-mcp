@@ -77,6 +77,7 @@ clients can use the [stdio installation](#install-for-local-stdio) below.
 | Gemini Apps | [Custom MCP connection](https://github.com/VirusTotal/virustotal-mcp/blob/main/docs/google-clients.md#gemini-apps-custom-connection) and optional [importable skill](https://github.com/VirusTotal/virustotal-mcp/blob/main/docs/google-clients.md#gemini-apps-skill), subject to Google's account and regional availability; complete hosted workflow validation pending |
 | Grok Build | [Manual plugin installation](https://github.com/VirusTotal/virustotal-mcp/blob/main/plugins/grok-build/README.md#install-from-source); [OAuth, reports and renewal verified](docs/additional-clients.md#grok-build-and-kimi-code) |
 | Kimi Code | [Manual plugin installation](https://github.com/VirusTotal/virustotal-mcp/blob/main/plugins/kimi/README.md#install-in-kimi-code); [OAuth, reports and proactive renewal verified with an external model](docs/additional-clients.md#grok-build-and-kimi-code) |
+| DeepSeek Harness | [Plugin with MCP and skill](https://github.com/VirusTotal/virustotal-mcp/blob/main/plugins/dsh/README.md); static token-file header, because this client has no OAuth flow |
 
 Remote OAuth configuration for [GitHub Copilot CLI](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-command-reference) and [Devin CLI](https://docs.devin.ai/cli/extensibility/mcp/configuration) follows their official documentation; an OAuth-authenticated VirusTotal tool workflow has not yet been verified in either client.
 

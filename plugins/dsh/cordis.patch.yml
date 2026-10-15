@@ -1,0 +1,49 @@
+# VirusTotal for DeepSeek Harness.
+#
+# Two rows: the hosted MCP connection, and the Host half that registers the
+# bundled threat-intelligence skill. Installing this bundle adds both.
+#
+# Credential. VTAI issues Agent Tokens rather than static client secrets, and the
+# DSH MCP client has no OAuth flow, so this connection authenticates with a static
+# `x-apikey` header. The header reads the token from a file only your user can
+# read, so no secret is stored in this patch, in this repository, or in
+# conversation text. Set VTAI_TOKEN_FILE to override the location; the default is
+# ~/.config/vt-mcp/token, matching the repository's stdio instructions.
+#
+# A missing or unreadable file yields an empty header instead of raising during
+# config interpolation. That keeps a bad credential from breaking Harness startup,
+# and surfaces as an unauthenticated connection with no virustotal tools.
+#
+# VTAI also accepts `Authorization: Bearer <token>` with the same token, rights
+# and quotas. Use one method per connection; replace the header below rather than
+# sending both.
+- insert:
+    - id: virustotal-mcp
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: virustotal
+        transport: streamable-http
+        url: https://ai.virustotal.com/mcp
+        # The repository documents 180s for clients that submit files; the DSH
+        # default is 60s, which is short for a submission round trip.
+        toolCallTimeoutMs: 180000
+        # A bundle install must succeed before the operator has provisioned a
+        # token. Keep this false so an unauthenticated connection reports missing
+        # tools instead of failing activation.
+        failOnStartupError: false
+        headers:
+          x-apikey: !!js |-
+            (() => {
+              try {
+                const load = (id) => typeof require === 'function' ? require(id) : process.getBuiltinModule(id);
+                const fs = load('node:fs');
+                const os = load('node:os');
+                const file = process.env.VTAI_TOKEN_FILE || os.homedir() + '/.config/vt-mcp/token';
+                return fs.readFileSync(file, 'utf8').trim();
+              } catch {
+                return '';
+              }
+            })()
+    - id: virustotal-skill
+      name: 'virustotal-mcp-dsh'
+      config: {}
