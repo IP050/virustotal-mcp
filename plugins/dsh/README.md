@@ -210,19 +210,16 @@ version 0.1.0.
 | Skill body load | Confirmed — loaded from this bundle's own `SKILL.md`, resource base resolved |
 | Bundle disable/enable cycle | Confirmed — rows and skill unregister and re-register cleanly |
 | `virustotal_submit_local_file` against a real 650,752-byte Windows executable | Confirmed — produced the matching SHA-256 and transferred all 650,752 bytes with no truncation |
-| Refusals before any byte is read | Confirmed — credential-like filename, absent path, directory, empty file, empty argument and final-component symlink |
-| A file VirusTotal already knows | Confirmed — the server returned `exists` and uploaded nothing |
-| Live registration of the tool in a *running* DSH session | **Not yet observed** — the running Harness had already imported 0.1.0, and a profile bundle caches its module, so the tool appears after a restart |
+| The same call inside a running DSH session | Confirmed — returned `exists` with the existing report, and published nothing new |
+| Refusal before any byte is read | Confirmed in the running session for a credential-like filename; confirmed in the harness for a missing path, a directory, an empty file, an empty argument and a final-component symlink |
+| The tool appearing in a running session | Confirmed, after a Harness restart. A profile bundle caches its imported module, so it does not appear before one |
 | A genuinely new upload, reanalysis and receipt recovery | **Not verified** — no new content was published |
 
-The rows above are exact: the upload tool's logic, its refusal paths and a real
-byte transfer were all exercised against the live server. What is unobserved is
-the tool appearing in a *running* session, because loading a new module generation
-needs a restart. Everything about other operating systems and other Harness
-versions is likewise unverified, and a working local stdio or another client's
+The rows above are exact. Everything about other operating systems and other
+Harness versions is unverified, and a working local stdio or another client's
 connection does not need to be replaced.
 
-Verification cost four report lookups against the tested VTAI account. The single
+Verification cost four report lookups against the tested VTAI account. The only
 submission attempted named a file VirusTotal already knew, so it published nothing
 new.
 

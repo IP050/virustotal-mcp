@@ -379,15 +379,15 @@ Ask the plugin's own skill for a report-only check once the tools appear:
 
 **Status:** Bundle installation and activation, skill registration, the
 missing-credential failure mode, discovery of the eleven hosted tools,
-`get_domain_report`, `get_url_report` and `get_file_report` calls, and a
-disable/enable cycle were verified on Windows with DSH Desktop 2.0.17 on
-2026-10-15. The plugin's own `virustotal_submit_local_file` tool was verified
-against the live server in the same period, including every refusal path and a
-650,752-byte transfer of an already-known file, which published nothing new; it
-appears in a running session only after a Harness restart, because a profile
-bundle caches its imported module. A genuinely new upload, reanalysis and receipt
-recovery were not exercised. Over HTTP `submit_local_file` is absent; the plugin
-supplies its own equivalent rather than an upload hook.
+`get_domain_report`, `get_url_report` and `get_file_report` calls, a disable/enable
+cycle, and the plugin's own `virustotal_submit_local_file` were verified on Windows
+with DSH Desktop 2.0.17 on 2026-10-15. In a running session the upload tool read a
+650,752-byte Windows executable, returned the existing report and published nothing
+new, and refused a credential-like filename before reading it. It appears in a
+running session only after a Harness restart, because a profile bundle caches its
+imported module. A genuinely new upload, reanalysis and receipt recovery were not
+exercised. Over HTTP `submit_local_file` is absent; the plugin supplies its own
+equivalent rather than an upload hook.
 
 ## Qwen Code
 
