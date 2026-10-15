@@ -43,15 +43,22 @@ or an attachment does not by itself grant that permission. Standard submissions
 are shared with the VirusTotal community and security partners. Existing host
 permissions still apply, and a tool being available is not an approval.
 
-**Files.** The hosted server accepts original bytes, not a path on this machine,
-and `submit_local_file` does not exist over HTTP. Call `submit_file` only when the
-host can supply both the verified lowercase SHA-256 and the original bytes as
-base64 programmatically. Do not compute base64 by hand, do not transcribe a
-base64 string through the model, and do not invent a hash. When byte transfer is
-unavailable, obtain the real hash, call `get_file_report` first, and use an existing
-report. Only an explicitly requested submission with a confirmed missing report
-makes the VirusTotal web-upload interface an appropriate suggestion to the user;
-that upload creates no VTAI receipt and must not be used to work around a refusal.
+**Files.** Use `virustotal_submit_local_file(path)` when the user explicitly asks
+to submit a file that exists on this machine. It reads that file, proves its
+lowercase SHA-256, and passes the original bytes to `submit_file`, so never
+compute base64 yourself, transcribe bytes through the model, or invent a hash. It
+refuses a symbolic link at the final path component and credential-like
+filenames; do not rename, re-encode or otherwise route around that refusal. When
+it reports that VirusTotal already knows the hash, the existing report was
+returned and nothing new was uploaded. Over HTTP there is no
+`mcp__virustotal__submit_local_file` and the server accepts bytes rather than a
+path. If the tool reports that the connection is unavailable, follow
+`plugins/dsh/README.md` instead of falling back to another upload channel. When a
+file cannot be read or transferred, obtain its real hash, call `get_file_report`
+first, and use an existing report. Only an explicitly requested submission with a
+confirmed missing report makes the VirusTotal web-upload interface an appropriate
+suggestion to the user; that upload creates no VTAI receipt and must not be used
+to work around a refusal.
 
 **Network indicators.** Before `submit_url`, `reanalyze_domain` or `reanalyze_ip`,
 obtain and keep a fresh lowercase UUIDv4 `request_id`. If no valid ID can be

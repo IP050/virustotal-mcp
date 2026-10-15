@@ -361,16 +361,16 @@ If discovery succeeds but lookups return `unavailable`, check the MCP process's 
 
 ## DeepSeek Harness
 
-Install the [DSH plugin](../plugins/dsh/README.md) to add the hosted server and a
-`virustotal-threat-intelligence` skill to DeepSeek Harness. The DSH MCP client
-supports `stdio` and `streamable-http` with static headers but has **no OAuth
-flow**, so this client cannot use the browser sign-in documented for Claude Code,
-Antigravity and Gemini CLI. The plugin instead sends a static `x-apikey` header
-whose value it reads at startup from a protected token file
-(`~/.config/vt-mcp/token`, or the path named by `VTAI_TOKEN_FILE`). The token is
-not stored in the plugin, in this repository or in the conversation. Follow the
-[plugin README](../plugins/dsh/README.md) for the credential steps, the tested
-configuration and the local stdio alternative that adds `submit_local_file`.
+Install the [DSH plugin](../plugins/dsh/README.md) to add the hosted server, a
+`virustotal-threat-intelligence` skill and a `virustotal_submit_local_file` tool to
+DeepSeek Harness. The DSH MCP client supports `stdio` and `streamable-http` with
+static headers but has **no OAuth flow**, so this client cannot use the browser
+sign-in documented for Claude Code, Antigravity and Gemini CLI. The plugin instead
+sends a static `x-apikey` header whose value it reads at startup from a protected
+token file (`~/.config/vt-mcp/token`, or the path named by `VTAI_TOKEN_FILE`). The
+token is not stored in the plugin, in this repository or in the conversation.
+Follow the [plugin README](../plugins/dsh/README.md) for the credential steps, the
+tested configuration and the local stdio alternative.
 
 Ask the plugin's own skill for a report-only check once the tools appear:
 
@@ -380,11 +380,14 @@ Ask the plugin's own skill for a report-only check once the tools appear:
 **Status:** Bundle installation and activation, skill registration, the
 missing-credential failure mode, discovery of the eleven hosted tools,
 `get_domain_report`, `get_url_report` and `get_file_report` calls, and a
-disable/enable cycle were verified
-on Windows with DSH Desktop 2.0.17 on 2026-10-15. Submission, reanalysis and
-receipt recovery were not exercised. Over HTTP `submit_local_file` is absent and
-the plugin ships no local upload hook, as with the
-[Antigravity plugin](../plugins/antigravity/README.md).
+disable/enable cycle were verified on Windows with DSH Desktop 2.0.17 on
+2026-10-15. The plugin's own `virustotal_submit_local_file` tool was verified
+against the live server in the same period, including every refusal path and a
+650,752-byte transfer of an already-known file, which published nothing new; it
+appears in a running session only after a Harness restart, because a profile
+bundle caches its imported module. A genuinely new upload, reanalysis and receipt
+recovery were not exercised. Over HTTP `submit_local_file` is absent; the plugin
+supplies its own equivalent rather than an upload hook.
 
 ## Qwen Code
 
