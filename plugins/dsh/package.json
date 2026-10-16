@@ -1,19 +1,21 @@
 {
   "name": "virustotal-mcp-dsh",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
-  "description": "VirusTotal threat intelligence for DeepSeek Harness: the hosted VTAI MCP connection and the virustotal-threat-intelligence skill.",
+  "description": "VirusTotal threat intelligence for DeepSeek Harness: the hosted VTAI MCP connection, the virustotal-threat-intelligence skill, a local file submission tool and two agent presets.",
   "license": "Apache-2.0",
   "icon": "./assets/virustotal-icon-512.png",
   "exports": {
     ".": "./index.js",
+    "./preset/read-only": "./preset/read-only.js",
     "./package.json": "./package.json",
     "./locale/*.json": "./locale/*.json"
   },
   "files": [
     "index.js",
     "cordis.patch.yml",
+    "preset",
     "skills",
     "locale",
     "assets",

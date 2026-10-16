@@ -12,15 +12,45 @@ remote server; use one connection per client.
 
 ## What the bundle installs
 
-Two rows are inserted into the profile:
+Four rows are inserted into the profile:
 
 | Row | Package | Role |
 |---|---|---|
 | `virustotal-mcp` | `@deepseek-ai/dsh-mcp-client` | The hosted `https://ai.virustotal.com/mcp` connection, exposed as `mcp__virustotal__*` tools |
 | `virustotal-skill` | this package | Registers the bundled `virustotal-threat-intelligence` skill, and the `virustotal_submit_local_file` tool |
+| `preset-virustotal-lookup` | `@deepseek-ai/dsh-agent-preset` | The read-only agent preset |
+| `preset-virustotal-triage` | `@deepseek-ai/dsh-agent-preset` | The full-workflow agent preset |
 
 The bundle declares no dependencies. `@deepseek-ai/dsh-mcp-client` ships with
 DeepSeek Harness and resolves from that installation.
+
+## Agent presets
+
+The bundle adds two presets to the roster. Choose one when you start a session.
+
+| Preset | VirusTotal operations | Use |
+|---|---|---|
+| **VirusTotal Lookup** | Reports, registered analyses and receipt recovery | Read-only triage |
+| **VirusTotal Triage** | Those, plus explicitly requested submission and reanalysis | The full workflow |
+
+The difference is not a matter of instruction. The connection and the skill are
+**host rows**, so their tools are global and every agent sees them whatever preset
+it selects; a preset therefore has to *remove* what it should not have. Inside the
+Lookup preset, `preset/read-only.js` denies the five MCP write tools and this
+bundle's own `virustotal_submit_local_file`. A restricted-away global reads as
+absent, so the read-only agent does not decline to submit — it has no submission
+tool to call.
+
+Two mechanisms are used on purpose: `tools.restrict` is evaluated at activation and
+keeps the tools out of the model's tool list, while `tools.guard` denies by name at
+call time and still holds if the connection reconnects later and registers a write
+tool the plugin had not seen. `restrict` rejects unknown names, so only names that
+actually exist are passed to it — which matters when the connection has no working
+credential and the write tools do not exist yet.
+
+Read-only here means **VirusTotal operations**. Both presets keep a shell and the
+filesystem tools, because hashing a local file before looking it up is the normal
+first step.
 
 ## Submitting a local file
 
@@ -194,8 +224,8 @@ the identity that submitted it. Removing the bundle does not revoke the token.
 
 ## Validation status
 
-Checked on **2026-10-15** on Windows with **DSH Desktop 2.0.17** and bundle
-version 0.1.0.
+Checked on **2026-10-15** and **2026-10-16** on Windows with **DSH Desktop 2.0.17**
+and bundle version 0.3.0.
 
 | Observation | Result |
 |---|---|
@@ -213,11 +243,22 @@ version 0.1.0.
 | The same call inside a running DSH session | Confirmed — returned `exists` with the existing report, and published nothing new |
 | Refusal before any byte is read | Confirmed in the running session for a credential-like filename; confirmed in the harness for a missing path, a directory, an empty file, an empty argument and a final-component symlink |
 | The tool appearing in a running session | Confirmed, after a Harness restart. A profile bundle caches its imported module, so it does not appear before one |
+| Both preset declarations on the roster | Confirmed — `preset-virustotal-lookup` and `preset-virustotal-triage` are `enabled` with `fiberPhase: active` |
+| The `virustotal-mcp-dsh/preset/read-only` subpath resolving from the profile | Confirmed — resolves to this bundle's `preset/read-only.js` |
+| The read-only guard's logic | Confirmed in the harness — denies all six write tools, allows report tools, and skips `restrict` when no write tool exists so an unknown name cannot fail the mount |
 | A genuinely new upload, reanalysis and receipt recovery | **Not verified** — no new content was published |
+| A session started under the Lookup preset actually hiding the submission tools | **Not verified** — this needs a session launched with that preset, which only the operator can select |
 
 The rows above are exact. Everything about other operating systems and other
 Harness versions is unverified, and a working local stdio or another client's
 connection does not need to be replaced.
+
+The read-only preset is the one claim here that rests on framework behaviour rather
+than an observed session: the guard logic is verified, both rows activate, and the
+subpath resolves, but that the submission tools are absent from a Lookup session's
+tool list has not been seen. Check it by starting a session on **VirusTotal Lookup**
+and confirming no `mcp__virustotal__submit_*`, `reanalyze_*` or
+`virustotal_submit_local_file` appears.
 
 Verification cost four report lookups against the tested VTAI account. The only
 submission attempted named a file VirusTotal already knew, so it published nothing

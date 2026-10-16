@@ -1,7 +1,8 @@
 # VirusTotal for DeepSeek Harness.
 #
-# Two rows: the hosted MCP connection, and the Host half that registers the
-# bundled threat-intelligence skill. Installing this bundle adds both.
+# Two host rows: the hosted MCP connection, and the Host half that registers the
+# bundled threat-intelligence skill and the local submission tool. Two further
+# rows declare the agent presets. Installing this bundle adds all four.
 #
 # Credential. VTAI issues Agent Tokens rather than static client secrets, and the
 # DSH MCP client has no OAuth flow, so this connection authenticates with a static
@@ -47,3 +48,85 @@
     - id: virustotal-skill
       name: 'virustotal-mcp-dsh'
       config: {}
+    # Two agent presets. The connection and skill above are host rows, so their
+    # tools are global and every agent sees them whatever preset it selects; a
+    # preset therefore removes what it should not have rather than adding what it
+    # needs. `virustotal-lookup` denies the write tools; `virustotal-triage` keeps
+    # them. The `skill` tool is preset-scoped, so both presets list it.
+    - id: preset-virustotal-lookup
+      name: '@deepseek-ai/dsh-agent-preset'
+      config:
+        id: virustotal-lookup
+        name: VirusTotal Lookup
+        description: >-
+          Read-only VirusTotal triage: existing reports, registered analyses and
+          receipt recovery, with every submission and reanalysis tool removed from
+          the agent's tool list rather than merely discouraged.
+        order: 20
+        plugins:
+          - id: persona
+            name: '@deepseek-ai/dsh-persona'
+            config:
+              prefix: >-
+                You investigate indicators with VirusTotal and report in stages,
+                verdict first. Your VirusTotal access is read-only: you can look up
+                existing reports and read registered analyses, and you have no tool
+                that submits, uploads or reanalyzes anything. When asked to submit or
+                refresh an indicator, say plainly that this preset cannot and that the
+                VirusTotal Triage preset can. A missing report is unknown, and zero
+                detections do not prove safety.
+          - id: tool-skill
+            name: '@deepseek-ai/dsh-tool-skill'
+          - id: tool-fs
+            name: '@deepseek-ai/dsh-tool-fs'
+          - id: tool-fs-search
+            name: '@deepseek-ai/dsh-tool-fs-search'
+          - id: tool-pwsh
+            name: '@deepseek-ai/dsh-tool-pwsh'
+            disabled: !!js process.platform !== 'win32'
+          - id: tool-bash
+            name: '@deepseek-ai/dsh-tool-bash'
+            disabled: !!js process.platform === 'win32'
+          - id: tool-todo
+            name: '@deepseek-ai/dsh-tool-todo'
+          - id: tool-ask-user
+            name: '@deepseek-ai/dsh-tool-ask-user'
+          - id: virustotal-read-only
+            name: 'virustotal-mcp-dsh/preset/read-only'
+    - id: preset-virustotal-triage
+      name: '@deepseek-ai/dsh-agent-preset'
+      config:
+        id: virustotal-triage
+        name: VirusTotal Triage
+        description: >-
+          The full VirusTotal workflow, adding explicitly requested file submission,
+          URL analysis and domain or IP reanalysis to the Lookup preset's reports,
+          analyses and receipt recovery.
+        order: 21
+        plugins:
+          - id: persona
+            name: '@deepseek-ai/dsh-persona'
+            config:
+              prefix: >-
+                You investigate indicators with VirusTotal and report in stages,
+                verdict first. You can submit a file or URL and request a domain or IP
+                reanalysis, but only when the user explicitly asks for that action and
+                authorizes sharing that content. Standard submissions are shared with
+                the VirusTotal community and security partners. A missing report is
+                unknown, and zero detections do not prove safety.
+          - id: tool-skill
+            name: '@deepseek-ai/dsh-tool-skill'
+          - id: tool-fs
+            name: '@deepseek-ai/dsh-tool-fs'
+          - id: tool-fs-search
+            name: '@deepseek-ai/dsh-tool-fs-search'
+          - id: tool-pwsh
+            name: '@deepseek-ai/dsh-tool-pwsh'
+            disabled: !!js process.platform !== 'win32'
+          - id: tool-bash
+            name: '@deepseek-ai/dsh-tool-bash'
+            disabled: !!js process.platform === 'win32'
+          - id: tool-todo
+            name: '@deepseek-ai/dsh-tool-todo'
+          - id: tool-ask-user
+            name: '@deepseek-ai/dsh-tool-ask-user'
