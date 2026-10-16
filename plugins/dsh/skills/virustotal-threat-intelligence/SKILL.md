@@ -18,6 +18,53 @@ restart DeepSeek Harness — rather than asking them to paste a token into chat.
 Never read a credential file, echo a token, or place one in a prompt, a command or
 a project file.
 
+## Answer in stages, verdict first
+
+The first report call is enough to answer. Deliver the verdict in that same step.
+Do not defer it to the end of an investigation, and do not open an open-ended local
+analysis of the sample to confirm a report the user can already read.
+
+Four stages, in order, every time. Stop after stage 3 unless the user asks for more.
+
+**Stage 1 — verdict. One line, bolded, then one sentence naming the artifact.**
+
+> **Flagged — 1 of 75 engines.**
+> `example-installer.exe` is a Windows executable with a single malicious detection.
+
+**Stage 2 — the numbers and what they mean.** One compact statistics line, then one
+or two sentences of interpretation that carry the caveat.
+
+> 1 malicious · 0 suspicious · 68 undetected · 2 engine failures · 4 type-unsupported
+>
+> One detection across 75 engines is weak evidence in either direction, and 2 engines
+> failed to scan, so coverage is incomplete. Undetected does not mean safe.
+
+**Stage 3 — provenance. One line: analysis date, source, report link.**
+
+> Analysis 2026-10-15 18:10 UTC · VirusTotal via VTAI · [report](https://www.virustotal.com/gui/file/…)
+
+**Stage 4 — depth, only when it is warranted.** If one specific unanswered question
+would change the verdict, say so in a single line and ask before spending steps on
+it. Otherwise offer the sample's own detail only when the user asks for it.
+
+Wording is limited to what the returned numbers support:
+
+| Verdict | Use when |
+|---|---|
+| **Flagged** | one or more engines reported malicious or suspicious |
+| **Not flagged** | no engine did — say explicitly that this is not a clean bill of health |
+| **Unknown** | there is no report, or coverage is too thin to say |
+
+Never write "clean", "safe", "harmless" or "no virus". No report establishes safety.
+
+Two habits this replaces:
+
+- **Never end a turn on a progress note.** "Let me check X" alone is not an answer.
+  If more work is needed, deliver the current verdict first, then say what you would
+  check next and why.
+- **Never let depth replace delivery.** An investigation that ends without the
+  verdict is worse for the user than the verdict alone.
+
 ## Retrieve and interpret evidence
 
 - `get_file_report` takes an MD5, SHA-1 or SHA-256; `get_url_report` an HTTP(S)
